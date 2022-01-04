@@ -1,4 +1,9 @@
-function dropUselessBlocks()
+direction = 4
+
+x, y, z = gps.locate(5)
+directions = { "north", "east", "south", "west" }
+
+function dropUselessBlocks(blocks)
   local usellesBlocks =  "create:limestone " ..
   "create:ochrum " ..
   "create:crimsite " ..
@@ -44,6 +49,26 @@ function refuel()
   end
 end
 
+function updateDirection(turn)
+  direction = direction - 1
+  if turn == "left" then
+    direction = (direction - 1 ) % 4
+  elseif turn == "right" then
+    direction = (direction + 1 ) % 4
+  end
+  direction = direction + 1
+end
+
+function tLeft()
+  updateDirection("left")
+  turtle.turnLeft()
+end
+
+function tRight()
+  updateDirection("right")
+  turtle.turnLeft()
+end
+
 function moveDown(x)
   for num = 1,x do
     refuel()
@@ -71,7 +96,6 @@ function moveUp(x)
       turtle.up()
     end
     print("moved up ".. num)
-    dropUselessBlocks()
   end
 end
 
@@ -93,26 +117,43 @@ function moveForward(x)
   end
 end
 
-moveDown(120)
+function look(turn)
+  while turn ~= directions[direction] do
+    tRight()
+  end
+end
 
-moveForward(100)
+function goTo(xTarget, yTarget, zTarget)
+  while yTarget < y do
+    moveDown()
+  end
+  while yTarget > y do
+    moveUp()
+  end
+  if xTarget < x then
+    look("west")
+    while xTarget < x do
+      moveForward()
+    end
+  end
+  if xTarget > x then
+    look("east")
+    while xTarget > x do
+      moveForward()
+    end
+  end
+  if zTarget < z then
+    look("north")
+    while zTarget < z do
+      moveForward()
+    end
+  end
+  if zTarget > z then
+    look("south")
+    while zTarget > z do
+      moveForward()
+    end
+  end
+end
 
-turtle.turnRight()
-moveForward(1)
-turtle.turnRight()
-
-moveForward(100)
-
-turtle.turnRight()
-turtle.forward()
-turtle.turnLeft()
-
-moveForward(100)
-
-turtle.turnLeft()
-moveForward(1)
-turtle.turnLeft()
-
-moveForward(100)
-
-moveUp(120)
+moveForward(5)
