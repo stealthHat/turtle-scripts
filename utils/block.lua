@@ -35,7 +35,7 @@ function usellesBlocks(world)
       "minecraft:dirt " ..
       "minecraft:tuff " ..
       "minecraft:gravel " ..
-      "minecraft:sand " ..
+--      "minecraft:sand " ..
       "minecraft:granite " ..
       "minecraft:clay_ball"
   end
