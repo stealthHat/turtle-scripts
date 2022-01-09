@@ -17,6 +17,9 @@ function hasCoal()
     print "Turtle has no Coal, backing to get some"
     local curSlot = turtle.getSelectedSlot()
     saveProgress()
+    look(directions[initDirection])
+    tRight()
+    tRight()
     for num = 1,16 do
       turtle.select(num)
       turtle.drop()
@@ -36,6 +39,9 @@ function inventoryFull()
     print "Inventory is full returning items"
     local curSlot = turtle.getSelectedSlot()
     saveProgress()
+    look(directions[initDirection])
+    tRight()
+    tRight()
     for num = 2,16 do
       turtle.select(num)
       turtle.drop()
