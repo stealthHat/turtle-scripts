@@ -1,57 +1,12 @@
-xInit, yInit, zInit = gps.locate()
-xProgress, yProgress, zProgress = gps.locate()
-xCoord, yCoord, zCoord = gps.locate()
+xInit, yInit, zInit = gps.locate(5)
+xCoord, yCoord, zCoord = gps.locate(5)
+
 directions = { "north", "east", "south", "west" }
-dProgress = 0
+zDiff = {-1, 0, 1, 0}
+xDiff = {0, 1, 0, -1}
 
-function saveProgress()
-  xProgress, yProgress, zProgress = gps.locate()
-  dProgress = direction
-  moveUp((yInit - yCoord) + 10)
-  goTo(xInit, yInit, zInit)
-end
-
-function hasCoal()
-  local item = turtle.getItemDetail(1)
-  if item and item.name ~= "quark:charcoal_block" then
-    print "Turtle has no Coal, backing to get some"
-    local curSlot = turtle.getSelectedSlot()
-    saveProgress()
-    look(directions[initDirection])
-    tRight()
-    tRight()
-    for num = 1,16 do
-      turtle.select(num)
-      turtle.drop()
-    end
-    look(directions[initDirection])
-    turtle.select(1)
-    turtle.suck()
-    turtle.select(curSlot)
-    moveUp((yInit - yCoord) + 10)
-    goTo(xProgress, yProgress, zProgress)
-    look(directions[dProgress])
-  end
-end
-
-function inventoryFull()
-  if turtle.getItemCount(16) > 0 then
-    print "Inventory is full returning items"
-    local curSlot = turtle.getSelectedSlot()
-    saveProgress()
-    look(directions[initDirection])
-    tRight()
-    tRight()
-    for num = 2,16 do
-      turtle.select(num)
-      turtle.drop()
-    end
-    turtle.select(curSlot)
-    moveUp((yInit - yCoord) + 10)
-    goTo(xProgress, yProgress, zProgress)
-    look(directions[dProgress])
-  end
-end
+xProgress, yProgress, zProgress = null
+dProgress = null
 
 function dropUselessBlocks()
   local curSlot = turtle.getSelectedSlot()
@@ -86,8 +41,16 @@ function updateDirection(turn)
 end
 
 function look(turn)
-  while turn ~= directions[direction] do
+  if turn == "back" then
+    while direction ~= initDirection do
+      tRight()
+    end
     tRight()
+    tRight()
+  else
+    while turn ~= directions[direction] do
+      tRight()
+    end
   end
 end
 
@@ -101,94 +64,123 @@ function tRight()
   turtle.turnRight()
 end
 
-function moveDown(x)
-  for num = 1,x do
-    refuel()
-    while turtle.detectDown() do
-      print "Block underneath, diging and trying again ..."
-      turtle.digDown()
-    end
-    while not turtle.down() do
-      print "Could move down, trying again ..."
-      turtle.down()
-    end
-    xCoord, yCoord, zCoord = gps.locate()
+function moveDown()
+  refuel()
+  while turtle.detectDown() do
+    turtle.digDown()
   end
+  while not turtle.down() do
+    turtle.down()
+  end
+  yCoord = yCoord - 1
 end
 
 function moveUp(x)
   for num = 1,x do
     refuel()
     while turtle.detectUp() do
-      print "Block above, diging and trying again ..."
       turtle.digUp()
     end
     while not turtle.up() do
-      print "Could move up, trying again ..."
       turtle.up()
     end
-    xCoord, yCoord, zCoord = gps.locate()
+    yCoord = yCoord + 1
   end
 end
 
-function moveForward(x,mining)
-  mining = mining or false
-  for num = 1,x do
-    refuel()
-    dropUselessBlocks()
-    while turtle.detect() do
-      print "Block ahead, diging and trying again ..."
-      turtle.dig()
-    end
-    if mining == true then
-      turtle.digUp()
-      turtle.digDown()
-    end
-    while not turtle.forward() do
-      print "Could move ahead, trying again ..."
-      turtle.forward()
-    end
-    xCoord, yCoord, zCoord = gps.locate()
+function moveForward(mining)
+  local mining = mining or false
+  refuel()
+  dropUselessBlocks()
+  while turtle.detect() do
+    turtle.dig()
   end
-end
-
-function oreLevel(ore)
-  if ore == "diamont" then
-    return yCoord - -58
-  elseif ore == "gold" then
-    return yCoord - 32
+  if mining == true then
+    turtle.digUp()
+    turtle.digDown()
   end
+  while not turtle.forward() do
+    turtle.forward()
+  end
+  xCoord = xCoord + xDiff[direction]
+  zCoord = zCoord + zDiff[direction]
 end
 
 function goTo(xTarget, yTarget, zTarget)
   if xTarget < xCoord then
     look("west")
     while xTarget < xCoord do
-      moveForward(1)
+      moveForward()
     end
   end
   if xTarget > xCoord then
     look("east")
     while xTarget > xCoord do
-      moveForward(1)
+      moveForward()
     end
   end
   if zTarget < zCoord then
     look("north")
     while zTarget < zCoord do
-      moveForward(1)
+      moveForward()
     end
   end
   if zTarget > zCoord then
     look("south")
     while zTarget > zCoord do
-      moveForward(1)
+      moveForward()
     end
   end
   while yTarget < yCoord do
-    moveDown(1)
+    moveDown()
   end
   while yTarget > yCoord do
     moveUp(1)
+  end
+end
+
+function backToWork()
+  moveUp((yInit - yCoord) + 10)
+  goTo(xProgress, yProgress, zProgress)
+  look(directions[dProgress])
+end
+
+function dropItems()
+  xProgress, yProgress, zProgress = gps.locate(5)
+  dProgress = direction
+  moveUp((yInit - yCoord) + 10)
+  goTo(xInit, yInit, zInit)
+  look(directions[initDirection])
+  tLeft()
+  for num = 2,16 do
+    turtle.select(num)
+    turtle.drop()
+  end
+end
+
+function noFuel()
+  local curSlot = turtle.getSelectedSlot()
+  local item = turtle.getItemDetail(1)
+  if item and item.name ~= "quark:charcoal_block" then
+    print "Turtle has no Coal, backing to get some"
+    turtle.select(1)
+    turtle.drop()
+    dropItems()
+    look(directions[initDirection])
+    tRight()
+    turtle.select(1)
+    turtle.suck()
+    turtle.select(curSlot)
+    backToWork()
+  end
+end
+
+function inventoryFull()
+  if turtle.getItemCount(16) > 0 then
+    print "Inventory is full returning items"
+    local curSlot = turtle.getSelectedSlot()
+    dropItems()
+    turtle.select(curSlot)
+    backToWork()
   end
 end
