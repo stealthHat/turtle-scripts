@@ -29,7 +29,7 @@ function usellesBlocks(world)
       "minecraft:calcite " ..
       "minecraft:smooth_basalt " ..
       "minecraft:flint " ..
---      "minecraft:cobbled_deepslate " ..
+      "minecraft:cobbled_deepslate " ..
       "minecraft:diorite " ..
       "minecraft:cobblestone " ..
       "minecraft:dirt " ..
