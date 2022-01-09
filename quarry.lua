@@ -19,7 +19,7 @@ function digLayer(area)
     end
   end
   turtle.digUp()
-  turtle.digdown()
+  turtle.digDown()
   goTo(xTo, yCoord, zTo)
   look(directions[initDirection])
   for d = 1,3 do
