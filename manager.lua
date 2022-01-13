@@ -1,21 +1,22 @@
 jobAvailable = true
 
-xStart, zStart = -709, -651
-xEnd, zEnd = -767, -738
-qDist = 4
+xStart, zStart = 100, 150
+xEnd, zEnd = 200, 10000
+qDist = 5
+qDepth = 13
 
 xNextJob = xStart
 zNextJob = zStart
-yNextJob = 66
+yNextJob = 31
 
 rednet.close("back")
 rednet.open("back")
 
 function setNextJob()
-  zNextJob = zNextJob - (qDist + 1)
+  zNextJob = zNextJob - qDist
   if zNextJob < zEnd then
     zNextJob = zStart
-    xNextJob = xNextJob - (qDist +1)
+    xNextJob = xNextJob - qDist
     if xNextJob < xEnd then
       jobAvailable = false
     end
@@ -34,6 +35,7 @@ while jobAvailable do
     rednet.send(id, tostring(yNextJob))
     rednet.send(id, tostring(zNextJob))
     rednet.send(id, tostring(qDist))
+    rednet.send(id, tostring(qDepth))
     setNextJob()
   end
 end
