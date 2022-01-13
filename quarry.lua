@@ -1,11 +1,12 @@
 require "utils.mining"
 require "utils.block"
 
-manager = 16;
+manager = 0;
 jobAvailable = true
 
 xQuarry, yQuarry, zQuarry = null
-direction, initDirection = 4, 4
+direction, initDirection = 1, 1
+
 usellesBlocks("Normal")
 
 function digLayer(area)

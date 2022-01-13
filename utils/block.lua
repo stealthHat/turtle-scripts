@@ -27,6 +27,7 @@ function usellesBlocks(world)
       "consistency_plus:cobbled_diorite " ..
       "consistency_plus:cobbled_calcite " ..
       "minecraft:calcite " ..
+      "minecraft:raw_copper " ..
       "minecraft:smooth_basalt " ..
       "minecraft:flint " ..
       "minecraft:cobbled_deepslate " ..
