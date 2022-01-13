@@ -6,6 +6,7 @@ jobAvailable = true
 
 xQuarry, yQuarry, zQuarry = null
 direction, initDirection = 1, 1
+
 usellesBlocks("Normal")
 
 function digLayer(area)
