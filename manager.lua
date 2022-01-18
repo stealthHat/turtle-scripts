@@ -1,13 +1,13 @@
 jobAvailable = true
 
-xStart, zStart = 100, 150
-xEnd, zEnd = 200, 10000
+xStart, zStart = -2328, -1412
+xEnd, zEnd = -2473, 1
 qDist = 5
-qDepth = 13
+qDepth = -58
 
 xNextJob = xStart
 zNextJob = zStart
-yNextJob = 31
+yNextJob = 50
 
 rednet.close("back")
 rednet.open("back")
