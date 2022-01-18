@@ -39,8 +39,8 @@ function detectDirection()
   turtle.back()
   turtle.down()
   local resultVec = vec2 - vec1
-  direction = (((resultVec.x + math.abs(resultVec.x) * 3) + (resultVec.z + math.abs(resultVec.z) * 4)) % 4)
-  initDirection= (((resultVec.x + math.abs(resultVec.x) * 3) + (resultVec.z + math.abs(resultVec.z) * 4)) % 4)
+  direction = (((resultVec.x + math.abs(resultVec.x) * 2) + (resultVec.z + math.abs(resultVec.z) * 3)) % 4) + 1
+  initDirection= (((resultVec.x + math.abs(resultVec.x) * 2) + (resultVec.z + math.abs(resultVec.z) * 3)) % 4) + 1
 end
 
 function updateDirection(turn)
