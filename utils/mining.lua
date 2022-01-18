@@ -1,12 +1,13 @@
 xInit, yInit, zInit = gps.locate(5)
 xCoord, yCoord, zCoord = gps.locate(5)
 
-directions = { "north", "east", "south", "west" }
-zDiff = {-1, 0, 1, 0}
-xDiff = {0, 1, 0, -1}
+directions = { "south", "west", "north", "east" }
+direction, initDirection = nil
+zDiff = {1, 0, -1, 0}
+xDiff = {0, -1, 0, 1}
 
-xProgress, yProgress, zProgress = null
-dProgress = null
+xProgress, yProgress, zProgress = nil
+dProgress = nil
 
 function dropUselessBlocks()
   local curSlot = turtle.getSelectedSlot()
@@ -28,6 +29,18 @@ function refuel()
     turtle.select(curSlot)
     print ("turtle refuled, current fuel level is: " .. turtle.getFuelLevel())
   end
+end
+
+function detectDirection()
+  turtle.up()
+  local vec1 = vector.new(xInit, yInit, zInit)
+  turtle.forward()
+  local vec2 = vector.new(gps.locate(2, false))
+  turtle.back()
+  turtle.down()
+  local resultVec = vec2 - vec1
+  direction = (((resultVec.x + math.abs(resultVec.x) * 3) + (resultVec.z + math.abs(resultVec.z) * 4)) % 4)
+  initDirection= (((resultVec.x + math.abs(resultVec.x) * 3) + (resultVec.z + math.abs(resultVec.z) * 4)) % 4)
 end
 
 function updateDirection(turn)
@@ -67,7 +80,12 @@ end
 function moveDown()
   refuel()
   while turtle.detectDown() do
-    turtle.digDown()
+    local success, data = turtle.inspectDown()
+    if success and string.find(data.name, "turtle") then
+      sleep(1)
+    else
+      turtle.digDown()
+    end
   end
   while not turtle.down() do
     turtle.down()
@@ -79,7 +97,12 @@ function moveUp(x)
   for num = 1,x do
     refuel()
     while turtle.detectUp() do
-      turtle.digUp()
+      local success, data = turtle.inspectUp()
+      if success and string.find(data.name, "turtle") then
+        sleep(1)
+      else
+        turtle.digUp()
+      end
     end
     while not turtle.up() do
       turtle.up()
@@ -90,17 +113,20 @@ end
 
 function moveForward(mining)
   local mining = mining or false
-  refuel()
-  dropUselessBlocks()
   while turtle.detect() do
-    turtle.dig()
+    local success, data = turtle.inspect()
+    if success and string.find(data.name, "turtle") then
+      sleep(1)
+    else
+      turtle.dig()
+    end
+  end
+  while not turtle.forward() do
+    turtle.forward()
   end
   if mining == true then
     turtle.digUp()
     turtle.digDown()
-  end
-  while not turtle.forward() do
-    turtle.forward()
   end
   xCoord = xCoord + xDiff[direction]
   zCoord = zCoord + zDiff[direction]
@@ -139,19 +165,24 @@ function goTo(xTarget, yTarget, zTarget)
   end
 end
 
-function backToWork()
-  moveUp((yInit - yCoord) + 10)
+function backToWork(lane)
+  moveUp((yInit - yCoord) + lane)
   goTo(xProgress, yProgress, zProgress)
   look(directions[dProgress])
 end
 
-function dropItems()
-  xProgress, yProgress, zProgress = gps.locate(5)
+function goHome(lane)
+  dropUselessBlocks()
+  xProgress, yProgress, zProgress = xCoord, yCoord, zCoord
   dProgress = direction
-  moveUp((yInit - yCoord) + 10)
+  moveUp((yInit - yCoord) + lane)
   goTo(xInit, yInit, zInit)
   look(directions[initDirection])
-  tLeft()
+end
+
+function dropItems()
+  goHome(getLane())
+  look("back")
   for num = 2,16 do
     turtle.select(num)
     turtle.drop()
@@ -161,17 +192,16 @@ end
 function noFuel()
   local curSlot = turtle.getSelectedSlot()
   local item = turtle.getItemDetail(1)
-  if item and item.name ~= "quark:charcoal_block" then
+  if not item or item.name ~= "quark:charcoal_block" then
     print "Turtle has no Coal, backing to get some"
     turtle.select(1)
     turtle.drop()
     dropItems()
     look(directions[initDirection])
-    tRight()
     turtle.select(1)
     turtle.suck()
     turtle.select(curSlot)
-    backToWork()
+    backToWork(getLane())
   end
 end
 
@@ -181,6 +211,10 @@ function inventoryFull()
     local curSlot = turtle.getSelectedSlot()
     dropItems()
     turtle.select(curSlot)
-    backToWork()
+    backToWork(getLane())
   end
+end
+
+function getLane()
+  return os.getComputerLabel():gsub("%D+", "") + 2
 end

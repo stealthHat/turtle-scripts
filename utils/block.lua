@@ -15,8 +15,11 @@ function usellesBlocks(world)
       "minecraft:blackstone " ..
       "minecraft:basalt"
   elseif world == "Normal" then
-    curUsellesBlocks  = "create:limestone " ..
+    curUsellesBlocks  = "quark:limestone " ..
+      "create:limestone " ..
       "create:ochrum " ..
+      "create:scoria " ..
+      "create:scorchia " ..
       "create:crimsite " ..
       "create:veridium " ..
       "create:asurine " ..
@@ -25,18 +28,21 @@ function usellesBlocks(world)
       "consistency_plus:cobbled_granite " ..
       "consistency_plus:cobbled_dripstone " ..
       "consistency_plus:cobbled_diorite " ..
-      "consistency_plus:cobbled_calcite " ..
-      "minecraft:calcite " ..
+--      "consistency_plus:cobbled_calcite " ..
+      "consistency_plus:cobbled_sandstone " ..
+--      "minecraft:calcite " ..
       "minecraft:raw_copper " ..
       "minecraft:smooth_basalt " ..
       "minecraft:flint " ..
       "minecraft:cobbled_deepslate " ..
-      "minecraft:diorite " ..
+--      "minecraft:diorite " ..
       "minecraft:cobblestone " ..
       "minecraft:dirt " ..
       "minecraft:tuff " ..
       "minecraft:gravel " ..
---      "minecraft:sand " ..
+      "minecraft:sand " ..
+      "minecraft:redstone " ..
+      "minecraft:lapis_lazuli " ..
       "minecraft:granite " ..
       "minecraft:clay_ball"
   end

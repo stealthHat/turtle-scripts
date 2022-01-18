@@ -1,5 +1,6 @@
 shell.run("rm", "*")
 shell.run("wget","https://raw.githubusercontent.com/stealthHat/turtle-scripts/rednet/startup.lua")
+shell.run("wget","https://raw.githubusercontent.com/stealthHat/turtle-scripts/rednet/platform.lua")
 shell.run("wget","https://raw.githubusercontent.com/stealthHat/turtle-scripts/rednet/quarry.lua")
 shell.run("wget","https://raw.githubusercontent.com/stealthHat/turtle-scripts/rednet/manager.lua")
 shell.run("mkdir", "utils")
