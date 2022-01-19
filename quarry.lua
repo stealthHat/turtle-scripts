@@ -71,11 +71,17 @@ function getJob()
   end
 end
 
-rednet.close("right")
-rednet.open("right")
+--rednet.close("right")
+--rednet.open("right")
+
+
+xInit, yInit, zInit = -1274,63,101
+xCoord, yCoord, zCoord = -1274,63,101
+direction, initDirection = 4,4
 
 refuel()
 usellesBlocks("Normal")
-detectDirection()
+--detectDirection()
 moveUp(getLane())
-getJob()
+digQuarry(-1265,60,1010,5,-58)
+goHome(getLane())

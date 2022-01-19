@@ -1,8 +1,8 @@
-xInit, yInit, zInit = gps.locate(5)
-xCoord, yCoord, zCoord = gps.locate(5)
+-- xInit, yInit, zInit = gps.locate(5)
+-- xCoord, yCoord, zCoord = gps.locate(5)
 
 directions = { "south", "west", "north", "east" }
-direction, initDirection = nil
+-- direction, initDirection = nil
 zDiff = {1, 0, -1, 0}
 xDiff = {0, -1, 0, 1}
 
@@ -192,7 +192,7 @@ end
 function noFuel()
   local curSlot = turtle.getSelectedSlot()
   local item = turtle.getItemDetail(1)
-  if not item or item.name ~= "quark:charcoal_block" then
+  if not item or not string.find(item.name, "charcoal") or not string.find(item.name, "Coal") then
     print "Turtle has no Coal, backing to get some"
     turtle.select(1)
     turtle.drop()

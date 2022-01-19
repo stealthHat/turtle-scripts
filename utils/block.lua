@@ -20,7 +20,7 @@ function usellesBlocks(world)
       "create:ochrum " ..
       "create:scoria " ..
       "create:scorchia " ..
-      "create:crimsite " ..
+--      "create:crimsite " ..
       "create:veridium " ..
       "create:asurine " ..
       "consistency_plus:cobbled_andesite " ..
@@ -38,13 +38,14 @@ function usellesBlocks(world)
 --      "minecraft:diorite " ..
       "minecraft:cobblestone " ..
       "minecraft:dirt " ..
-      "minecraft:tuff " ..
-      "minecraft:gravel " ..
-      "minecraft:sand " ..
-      "minecraft:redstone " ..
-      "minecraft:lapis_lazuli " ..
-      "minecraft:granite " ..
-      "minecraft:clay_ball"
+      "minecraft:tuff "
+--      "minecraft:gravel " ..
+--      "minecraft:sand " ..
+--      "minecraft:redstone " ..
+--      "minecraft:lapis_lazuli " ..
+--      "minecraft:granite " ..
+--      "minecraft:clay_ball"
+
   end
 end
 

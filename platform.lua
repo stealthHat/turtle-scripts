@@ -1,6 +1,6 @@
 slot = 1
 
-function placeBlock()
+function placeDown()
   if turtle.getItemCount(slot) == 0 then
     slot = slot + 1
     turtle.select(slot)
@@ -8,21 +8,21 @@ function placeBlock()
   turtle.placeDown()
 end
 
-function makeLayer(x,z)
+function Layer(x,z)
   for num = 1,z do
     for i = 1,(x -1) do
+      placeDown()
       turtle.forward()
-      placeBlock()
     end
     if (num%2) == 1 and num < x then
       turtle.turnLeft()
       turtle.forward()
-      placeBlock()
+      placeDown()
       turtle.turnLeft()
     elseif num < x then
       turtle.turnRight()
       turtle.forward()
-      placeBlock()
+      placeDown()
       turtle.turnRight()
     end
   end
@@ -32,4 +32,4 @@ print "X How big?"
 local xInput = read()
 print "Z How big?"
 local zInput = read()
-makeLayer(tonumber(xInput),tonumber(zInput))
+Layer(tonumber(xInput),tonumber(zInput))
