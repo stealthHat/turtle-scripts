@@ -1,32 +1,31 @@
-require "utils.mining"
-require "utils.block"
+require "mining"
 
-manager = 0;
+manager = rednet.lookup("manager","manager")
 jobAvailable = true
+
+function checkForward()
+  inventoryFull()
+  moveForward(true)
+end
 
 function digLayer(area, depth)
   for num = 1,area do
     for i = 1, (area - 1) do
-      moveForward(true)
-      inventoryFull()
+      checkForward()
     end
     if (num%2) == 1 and num < area then
       tLeft()
-      moveForward(true)
-      inventoryFull()
+      checkForward()
       tLeft()
     elseif num < area then
       tRight()
-      moveForward(true)
-      inventoryFull()
+      checkForward()
       tRight()
     end
   end
   turtle.digUp()
   turtle.digDown()
   refuel()
-  noFuel()
-  dropUselessBlocks()
   goTo(xTo, yCoord, zTo)
   look(directions[initDirection])
   for d = 1,3 do
@@ -38,7 +37,6 @@ end
 
 function digQuarry(xQuarry, yQuarry, zQuarry, area, depth)
   xTo, yTo, zTo = xQuarry, yQuarry, zQuarry, depth
-  print(yTo)
   print("Going to " ..xTo.. " " ..yTo.. " " ..zTo)
   goTo(xTo, yTo, zTo)
   look(directions[initDirection])
@@ -71,17 +69,12 @@ function getJob()
   end
 end
 
---rednet.close("right")
---rednet.open("right")
-
-
-xInit, yInit, zInit = -1274,63,101
-xCoord, yCoord, zCoord = -1274,63,101
-direction, initDirection = 4,4
+local init = fs.open("init", "w")
+init.write(tostring(xInit).." "..tostring(yInit).." "..tostring(zInit))
+init.close()
 
 refuel()
-usellesBlocks("Normal")
---detectDirection()
+detectDirection()
 moveUp(getLane())
-digQuarry(-1265,60,1010,5,-58)
-goHome(getLane())
+getJob()
+fs.delete("init")

@@ -1,16 +1,23 @@
+rednet.host("manager","manager")
 jobAvailable = true
 
-xStart, zStart = -2328, -1412
-xEnd, zEnd = -2473, 1
-qDist = 5
-qDepth = -58
+function readNumber()
+  return tonumber(read())
+end
+
+print "xStart and zStart"
+xStart, zStart = readNumber(), readNumber()
+print "xEnd and zEnd"
+xEnd, zEnd = readNumber(), readNumber()
+print "yStart"
+yNextJob = readNumber()
+print "Quarry width"
+qDist = readNumber()
+print "Quarry depth"
+qDepth = readNumber()
 
 xNextJob = xStart
 zNextJob = zStart
-yNextJob = 50
-
-rednet.close("back")
-rednet.open("back")
 
 function setNextJob()
   zNextJob = zNextJob - qDist
