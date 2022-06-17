@@ -26,10 +26,10 @@ function digLayer(area, depth)
   turtle.digUp()
   turtle.digDown()
   refuel()
-  goTo(xTo, yCoord, zTo)
-  look(directions[initDirection])
+  goTo(xTo, Ycoord, zTo)
+  look(directions[initdirection])
   for d = 1,3 do
-    if yCoord > depth then
+    if Ycoord > depth then
       moveDown()
     end
   end
@@ -39,12 +39,12 @@ function digQuarry(xQuarry, yQuarry, zQuarry, area, depth)
   xTo, yTo, zTo = xQuarry, yQuarry, zQuarry, depth
   print("Going to " ..xTo.. " " ..yTo.. " " ..zTo)
   goTo(xTo, yTo, zTo)
-  look(directions[initDirection])
-  while yCoord > depth do
+  look(directions[initdirection])
+  while Ycoord > depth do
     digLayer(area, depth)
   end
   print "Quarry done, getting another job"
-  moveUp((yTo - yCoord) + getLane())
+  moveUp((yTo - Ycoord) + getLane())
 end
 
 function getJob()
@@ -64,17 +64,17 @@ function getJob()
     elseif message == "no" then
       print("No more jobs, going home")
       jobAvailable = false
-      goHome((yInit - yCoord) + getLane())
+      goHome((Yinit - Ycoord) + getLane())
     end
   end
 end
 
 local init = fs.open("init", "w")
-init.write(tostring(xInit).." "..tostring(yInit).." "..tostring(zInit))
+init.write(tostring(Xinit).." "..tostring(Yinit).." "..tostring(Zinit))
 init.close()
 
 refuel()
-detectDirection()
+detectdirection()
 moveUp(getLane())
 getJob()
 fs.delete("init")

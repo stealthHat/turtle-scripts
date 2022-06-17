@@ -1,5 +1,5 @@
-rednet.close("back")
-rednet.open("back")
+rednet.close "back"
+rednet.open "back"
 
 multishell.launch({}, "/tasks/manager.lua")
 multishell.launch({}, "/controllers/send.lua")

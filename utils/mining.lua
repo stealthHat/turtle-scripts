@@ -9,7 +9,7 @@ function refuel()
       turtle.select(1)
       turtle.drop()
       dropItems()
-      look(directions[initDirection])
+      look(Directions[Init_direction])
       turtle.select(1)
       turtle.suck()
       turtle.select(curSlot)
@@ -27,7 +27,7 @@ function dropUselessBlocks()
   local curSlot = turtle.getSelectedSlot()
   for slot = 1,16 do
     local item = turtle.getItemDetail(slot)
-    if item and string.find(usellesBlocks(), item.name) then
+    if item and string.find(UsellesBlocks(), item.name) then
       turtle.select(slot)
       turtle.drop()
     end

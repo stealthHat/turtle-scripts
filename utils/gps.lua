@@ -1,118 +1,228 @@
-xInit, yInit, zInit = gps.locate(5)
-xCoord, yCoord, zCoord = gps.locate(5)
+local state = {
+  location = {
+    x = nil,
+    y = nil,
+    z = nil,
+  },
+  orientation = nil,
+}
 
-directions = { "south", "west", "north", "east" }
-direction, initDirection = nil
-zDiff = {1, 0, -1, 0}
-xDiff = {0, -1, 0, 1}
+state.location.x, state.location.y, state.location.z = gps.locate(5)
+Xinit, Yinit, Zinit = gps.locate(5)
+Xcoord, Ycoord, Zcoord = gps.locate(5)
 
-xProgress, yProgress, zProgress = nil
-dProgress = nil
+local bumps = {
+  north = { 0, 0, -1 },
+  south = { 0, 0, 1 },
+  east = { 1, 0, 0 },
+  west = { -1, 0, 0 },
+}
 
-function detectDirection()
-  turtle.up()
-  local vec1 = vector.new(xInit, yInit, zInit)
-  turtle.forward()
-  local vec2 = vector.new(gps.locate(5))
-  turtle.back()
-  turtle.down()
-  local resultVec = vec2 - vec1
-  direction = (((resultVec.x + math.abs(resultVec.x) * 2) + (resultVec.z + math.abs(resultVec.z) * 3)) % 4) + 1
-  initDirection= (((resultVec.x + math.abs(resultVec.x) * 2) + (resultVec.z + math.abs(resultVec.z) * 3)) % 4) + 1
-end
+local left_shift = {
+  north = "west",
+  south = "east",
+  east = "north",
+  west = "south",
+}
 
-function updateCoord(path)
-  if path == "forward" then
-    xCoord = xCoord + xDiff[direction]
-    zCoord = zCoord + zDiff[direction]
-  elseif path == "up" then
-    yCoord = yCoord + 1
-  else
-    yCoord = yCoord - 1
+local right_shift = {
+  north = "east",
+  south = "west",
+  east = "south",
+  west = "north",
+}
+
+local move = {
+  forward = turtle.forward,
+  up = turtle.up,
+  down = turtle.down,
+  back = turtle.back,
+  left = turtle.turnLeft,
+  right = turtle.turnRight,
+}
+
+local dig = {
+  forward = turtle.dig,
+  up = turtle.digUp,
+  down = turtle.digDown,
+}
+
+local detect = {
+  forward = turtle.detect,
+  up = turtle.detectUp,
+  down = turtle.detectDown,
+}
+
+function calibrate()
+  -- GEOPOSITION BY MOVING TO ADJACENT BLOCK AND BACK
+  local sx, sy, sz = gps.locate()
+  if not sx or not sy or not sz then
+    return false
   end
-end
-
-function updateDirection(turn)
-  direction = direction - 1
-  if turn == "left" then
-    direction = (direction - 1 ) % 4
-  elseif turn == "right" then
-    direction = (direction + 1 ) % 4
-  end
-  direction = direction + 1
-end
-
-function look(turn)
-  if turn == "back" then
-    while direction ~= initDirection do
-      tRight()
+  for i = 1, 4 do
+    -- TRY TO FIND EMPTY ADJACENT BLOCK
+    if not turtle.detect() then
+      break
     end
-    tRight()
-    tRight()
-  else
-    while turn ~= directions[direction] do
-      tRight()
+    if not turtle.turnRight() then
+      return false
     end
   end
+  if turtle.detect() then
+    -- TRY TO DIG ADJACENT BLOCK
+    for i = 1, 4 do
+      dig.forward()
+      if not turtle.detect() then
+        break
+      end
+      if not turtle.turnRight() then
+        return false
+      end
+    end
+    if turtle.detect() then
+      return false
+    end
+  end
+  if not turtle.forward() then
+    return false
+  end
+
+  -- block found
+  local nx, ny, nz = gps.locate()
+  if nx == sx + 1 then
+    state.orientation = "east"
+  elseif nx == sx - 1 then
+    state.orientation = "west"
+  elseif nz == sz + 1 then
+    state.orientation = "south"
+  elseif nz == sz - 1 then
+    state.orientation = "north"
+  else
+    return false
+  end
+  state.location = { x = nx, y = ny, z = nz }
+  print("Calibrated to " .. str_xyz(state.location, state.orientation))
+
+  go("back")
+  back()
+
+  return true
 end
 
-function tLeft()
-  updateDirection("left")
-  turtle.turnLeft()
+function face(orientation)
+  if state.orientation == orientation then
+    return true
+  elseif right_shift[state.orientation] == orientation then
+    if not go "right" then
+      return false
+    end
+  elseif left_shift[state.orientation] == orientation then
+    if not go "left" then
+      return false
+    end
+  elseif right_shift[right_shift[state.orientation]] == orientation then
+    if not go "right" then
+      return false
+    end
+    if not go "right" then
+      return false
+    end
+  else
+    return false
+  end
+  return true
 end
 
-function tRight()
-  updateDirection("right")
-  turtle.turnRight()
+function log_movement(direction)
+  local bump
+  if direction == "up" then
+    state.location.y = state.location.y + 1
+  elseif direction == "down" then
+    state.location.y = state.location.y - 1
+  elseif direction == "forward" then
+    bump = bumps[state.orientation]
+    state.location = { x = state.location.x + bump[1], y = state.location.y + bump[2], z = state.location.z + bump[3] }
+  elseif direction == "back" then
+    bump = bumps[state.orientation]
+    state.location = { x = state.location.x - bump[1], y = state.location.y - bump[2], z = state.location.z - bump[3] }
+  elseif direction == "left" then
+    state.orientation = left_shift[state.orientation]
+  elseif direction == "right" then
+    state.orientation = right_shift[state.orientation]
+  end
+  return true
+end
+
+function go(direction, nodig)
+  if not nodig then
+    if detect[direction] then
+      if detect[direction]() then
+        dig[direction]()
+      end
+    end
+  end
+  if not move[direction] then
+    return false
+  end
+  log_movement(direction)
+  return true
 end
 
 function goTo(xTarget, yTarget, zTarget)
-  if xTarget < xCoord then
-    look("west")
-    while xTarget < xCoord do
-      moveForward()
+  if xTarget < Xcoord then
+    face "west"
+    while xTarget < Xcoord do
+      go "forward"
     end
   end
-  if xTarget > xCoord then
-    look("east")
-    while xTarget > xCoord do
-      moveForward()
+  if xTarget > Xcoord then
+    face "east"
+    while xTarget > Xcoord do
+      go "forward"
     end
   end
-  if zTarget < zCoord then
-    look("north")
-    while zTarget < zCoord do
-      moveForward()
+  if zTarget < Zcoord then
+    face "north"
+    while zTarget < Zcoord do
+      go "forward"
     end
   end
-  if zTarget > zCoord then
-    look("south")
-    while zTarget > zCoord do
-      moveForward()
+  if zTarget > Zcoord then
+    face "south"
+    while zTarget > Zcoord do
+      go "forward"
     end
   end
-  while yTarget < yCoord do
-    moveDown()
+  while yTarget < Ycoord do
+    go "down"
   end
-  while yTarget > yCoord do
-    moveUp(1)
+  while yTarget > Ycoord do
+    go "up"
   end
 end
 
 function backToWork(lane)
-  moveUp((yInit - yCoord) + lane)
+  moveUp((Yinit - Ycoord) + lane)
   goTo(xProgress, yProgress, zProgress)
-  look(directions[dProgress])
+  look(Directions[dProgress])
 end
 
 function goHome(lane)
-  xProgress, yProgress, zProgress = xCoord, yCoord, zCoord
+  xProgress, yProgress, zProgress = Xcoord, Ycoord, Zcoord
   dProgress = direction
-  moveUp((yInit - yCoord) + lane)
-  goTo(xInit, yInit, zInit)
-  look(directions[initDirection])
+  moveUp((Yinit - Ycoord) + lane)
+  goTo(Xinit, Yinit, Zinit)
+  look(Directions[Init_direction])
 end
 
 function getLane()
   return os.getComputerLabel():gsub("%D+", "") + 2
+end
+
+function str_xyz(coords, facing)
+  if facing then
+    return coords.x .. "," .. coords.y .. "," .. coords.z .. ":" .. facing
+  else
+    return coords.x .. "," .. coords.y .. "," .. coords.z
+  end
 end
