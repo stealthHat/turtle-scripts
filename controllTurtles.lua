@@ -2,6 +2,13 @@ rednet.close "back"
 rednet.open "back"
 
 multishell.launch({}, "/tasks/manager.lua")
-multishell.launch({}, "/controllers/send.lua")
 multishell.setTitle(2, "manager")
-multishell.setTitle(3, "send")
+
+while true do
+   print "What to do?"
+   local input = read()
+   rednet.broadcast(input)
+   if input == "exit" then
+      break
+   end
+end

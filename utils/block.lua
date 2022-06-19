@@ -1,4 +1,6 @@
-UsellesBlocks = "quark:limestone "
+local blocks = {}
+
+blocks.useless_blocks = "quark:limestone "
   .. "create:limestone "
   .. "create:ochrum "
   .. "create:scoria "
@@ -39,3 +41,7 @@ UsellesBlocks = "quark:limestone "
   --    "minecraft:lapis_lazuli " ..
   .. "minecraft:granite "
   .. "minecraft:clay_ball"
+
+blocks.fuel_blocks = "minecraft:charcoal minecraft:coal projecte:aeternalis_fuel_block"
+
+return blocks

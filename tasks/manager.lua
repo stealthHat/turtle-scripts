@@ -1,25 +1,26 @@
-rednet.host("manager","manager")
-jobAvailable = true
+rednet.host("manager", "manager")
 
-function readNumber()
+local jobAvailable = true
+
+local function readNumber()
   return tonumber(read())
 end
 
 print "xStart and zStart"
-xStart, zStart = readNumber(), readNumber()
+local xStart, zStart = readNumber(), readNumber()
 print "xEnd and zEnd"
-xEnd, zEnd = readNumber(), readNumber()
+local xEnd, zEnd = readNumber(), readNumber()
 print "yStart"
-yNextJob = readNumber()
+local yNextJob = readNumber()
+print "yEnd"
+local qDepth = readNumber()
 print "Quarry width"
-qDist = readNumber()
-print "Quarry depth"
-qDepth = readNumber()
+local qDist = readNumber()
 
-xNextJob = xStart
-zNextJob = zStart
+local xNextJob = xStart
+local zNextJob = zStart
 
-function setNextJob()
+local function setNextJob()
   zNextJob = zNextJob - qDist
   if zNextJob < zEnd then
     zNextJob = zStart
@@ -31,12 +32,12 @@ function setNextJob()
 end
 
 while jobAvailable do
-  print("Waiting for turtles")
-  id, message, protocolt = rednet.receive()
-  print("Tutle " ..id.. " needs a job")
+  print "Waiting for turtles"
+  local id, message, _ = rednet.receive()
+  print("Tutle " .. id .. " needs a job")
 
   if message == "getJob" then
-    print("Job available at " ..xNextJob.. " " ..zNextJob)
+    print("Job available at " .. xNextJob .. " " .. zNextJob)
     rednet.send(id, "yes")
     rednet.send(id, tostring(xNextJob))
     rednet.send(id, tostring(yNextJob))
@@ -47,10 +48,10 @@ while jobAvailable do
   end
 end
 
-print("No Jobs available")
+print "No Jobs available"
 
 while true do
-  id, message, protocol = rednet.receive()
+  local id, message, _ = rednet.receive()
   if message == "getJob" then
     rednet.send(id, "no")
   end

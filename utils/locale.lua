@@ -1,6 +1,6 @@
 local locale = {}
 
-local actions = require "utils.actions"
+locale["actions"] = require "utils.actions"
 
 State = {
   location = {
@@ -8,6 +8,12 @@ State = {
     y = 0,
     z = 0,
   },
+  init_location = {
+    x = 0,
+    y = 0,
+    z = 0,
+  },
+  init_orientation = "unknown",
   orientation = "unknown",
 }
 
@@ -34,7 +40,7 @@ local right_shift = {
 
 function locale.calibrate()
   print "Stating calibration"
-  local sx, _, sz = gps.locate()
+  local sx, sy, sz = gps.locate()
 
   turtle.forward()
   local nx, ny, nz = gps.locate()
@@ -50,6 +56,8 @@ function locale.calibrate()
   end
 
   State.location = { x = nx, y = ny, z = nz }
+  State.init_location = { x = sx, y = sy, z = sz }
+  State.init_orientation = State.orientation
   print("Calibrated to " .. State.location.x .. "," .. State.location.y .. "," .. State.location.z .. " facing " .. State.orientation)
 
   locale.move "back"
@@ -81,14 +89,13 @@ local function log_movement(direction)
 end
 
 function locale.move(direction, nodig)
-  actions.move(direction, nodig)
+  locale.actions.move(direction, nodig)
   log_movement(direction)
 
   return true
 end
 
--- used on go_to
-local function face(orientation)
+function locale.face(orientation)
   if State.orientation == orientation then
     return true
   elseif right_shift[State.orientation] == orientation then
@@ -113,35 +120,35 @@ local function face(orientation)
   return true
 end
 
-function locale.go_to(x_target, y_target, z_target)
-  if x_target < State.location.x then
-    face "west"
-    while x_target < State.location.x do
+function locale.go_to(location)
+  if location.x < State.location.x then
+    locale.face "west"
+    while location.x < State.location.x do
       locale.move "forward"
     end
   end
-  if x_target > State.location.x then
-    face "east"
-    while x_target > State.location.x do
+  if location.x > State.location.x then
+    locale.face "east"
+    while location.x > State.location.x do
       locale.move "forward"
     end
   end
-  if z_target < State.location.z then
-    face "north"
-    while z_target < State.location.z do
+  if location.z < State.location.z then
+    locale.face "north"
+    while location.z < State.location.z do
       locale.move "forward"
     end
   end
-  if z_target > State.location.z then
-    face "south"
-    while z_target > State.location.z do
+  if location.z > State.location.z then
+    locale.face "south"
+    while location.z > State.location.z do
       locale.move "forward"
     end
   end
-  while y_target < State.location.y do
+  while location.y < State.location.y do
     locale.move "down"
   end
-  while y_target > State.location.y do
+  while location.y > State.location.y do
     locale.move "down"
   end
 end

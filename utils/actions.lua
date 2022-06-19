@@ -1,5 +1,8 @@
 local actions = {}
 
+actions["useless_blocks"] = require("utils.block").useless_blocks
+actions["fuel_blocks"] = require("utils.block").fuel_blocks
+
 local move = {
   forward = turtle.forward,
   up = turtle.up,
@@ -28,7 +31,7 @@ local inspect = {
 }
 
 function actions.move(direction, nodig)
-  if direction == "right" or direction == "left" or direction == "back" then
+  if string.find("left right back", direction) then
     nodig = true
   end
   if not nodig then
@@ -45,6 +48,37 @@ function actions.move(direction, nodig)
     return false
   end
   return true
+end
+
+function actions.refuel()
+  local curSlot = turtle.getSelectedSlot()
+  local data = turtle.getItemDetail(1)
+
+  if data and string.find(actions.fuel_blocks, data.name) then
+    turtle.select(1)
+    turtle.refuel()
+    turtle.select(curSlot)
+    print("turtle refiled, current fuel level is: " .. turtle.getFuelLevel())
+
+    return true
+  else
+    print "No fuel to use"
+    return false
+  end
+end
+
+function actions.drop_useless_blocks()
+  local curSlot = turtle.getSelectedSlot()
+
+  for slot = 1, 16 do
+    local item = turtle.getItemDetail(slot)
+    if item and string.find(actions.useless_blocks, item.name) then
+      turtle.select(slot)
+      turtle.drop()
+    end
+  end
+
+  turtle.select(curSlot)
 end
 
 return actions
