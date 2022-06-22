@@ -149,7 +149,7 @@ function locale.go_to(location)
     locale.move "down"
   end
   while location.y > State.location.y do
-    locale.move "down"
+    locale.move "up"
   end
 end
 

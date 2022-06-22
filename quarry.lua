@@ -4,27 +4,27 @@ local manager = rednet.lookup("manager", "manager")
 local jobAvailable = true
 
 local function go_home(lane)
-  State.prog_location = State.location
+  State.prog_location = { x = State.location.x, y = State.location.y, z = State.location.z }
   State.prog_orientation = State.orientation
 
-  go_to_lane(lane)
+  Go_to_lane(lane)
 
   locale.go_to(State.init_location)
   locale.face(State.init_orientation)
 end
 
 local function back_to_work()
-  go_to_lane(get_lane())
+  Go_to_lane(Get_lane())
 
   locale.go_to(State.prog_location)
   locale.face(State.prog_orientation)
 end
 
-function get_lane()
+function Get_lane()
   return os.getComputerLabel():gsub("%D+", "") + 2
 end
 
-function go_to_lane(lane)
+function Go_to_lane(lane)
   local up = (State.init_location.y - State.location.y) + lane
   for _ = 1, up do
     locale.move "up"
@@ -32,13 +32,14 @@ function go_to_lane(lane)
 end
 
 local function drop_items()
-  go_home(get_lane())
-  locale.face(State.init_orientation)
+  go_home(Get_lane())
   locale.move "right"
   for num = 2, 16 do
     turtle.select(num)
     turtle.drop()
   end
+  turtle.select(1)
+  locale.face(State.init_orientation)
 end
 
 local function refuel()
@@ -48,7 +49,6 @@ local function refuel()
     turtle.select(1)
     turtle.drop()
     drop_items()
-    locale.face(State.init_orientation)
     locale.move "left"
     turtle.select(1)
     turtle.suck()
@@ -114,7 +114,7 @@ local function dig_quarry(x, y, z, area, depth)
   end
 
   print "Quarry done, getting another job"
-  go_to_lane(get_lane())
+  Go_to_lane(Get_lane())
 end
 
 local function get_job()
@@ -134,7 +134,7 @@ local function get_job()
     elseif message == "no" then
       print "No more jobs, going home"
       jobAvailable = false
-      go_home(get_lane())
+      go_home(Get_lane())
     end
   end
 end
@@ -145,5 +145,5 @@ end
 
 refuel()
 locale.calibrate()
-go_to_lane(get_lane())
+Go_to_lane(Get_lane())
 get_job()
