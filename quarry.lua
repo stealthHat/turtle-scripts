@@ -34,6 +34,13 @@ end
 local function drop_items()
   go_home(Get_lane())
   locale.move "right"
+
+  local data = turtle.getItemDetail(1)
+
+  if data and not string.find(locale.actions.fuel_blocks, data.name) then
+    turtle.select(1)
+    turtle.drop()
+  end
   for num = 2, 16 do
     turtle.select(num)
     turtle.drop()
@@ -46,11 +53,8 @@ local function refuel()
   if turtle.getFuelLevel() > 5000 then
   elseif not locale.actions.refuel() then
     print "Turtle has no Coal, backing to get some"
-    turtle.select(1)
-    turtle.drop()
     drop_items()
     locale.move "left"
-    turtle.select(1)
     turtle.suck()
     back_to_work()
   end
