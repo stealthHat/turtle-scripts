@@ -139,10 +139,6 @@ local function get_job()
   end
 end
 
---local init = fs.open("init", "w")
---init.write(tostring(State.init_location.x) .. " " .. tostring(State.init_location.y) .. " " .. tostring(State.init_location.z))
---init.close()
-
 refuel()
 locale.calibrate()
 Go_to_lane(Get_lane())

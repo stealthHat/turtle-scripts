@@ -48,9 +48,9 @@ blocks.useless_blocks = "quark:limestone "
 --  .. "consistency_plus:cobbled_calcite "
 --  .. "consistency_plus:cobbled_sandstone "
 --  .. "minecraft:smooth_basalt "
---   .. "minecraft:cobbled_deepslate "
---   .. "minecraft:sand "
---   .. "minecraft:redstone "
+--  .. "minecraft:cobbled_deepslate "
+--  .. "minecraft:sand "
+--  .. "minecraft:redstone "
 
 blocks.fuel_blocks = "minecraft:charcoal minecraft:coal projecte:aeternalis_fuel_block"
 

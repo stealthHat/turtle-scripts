@@ -2,20 +2,7 @@ local locale = {}
 
 locale["actions"] = require "utils.actions"
 
-State = {
-  location = {
-    x = 0,
-    y = 0,
-    z = 0,
-  },
-  init_location = {
-    x = 0,
-    y = 0,
-    z = 0,
-  },
-  init_orientation = "unknown",
-  orientation = "unknown",
-}
+State = {}
 
 local bumps = {
   north = { 0, 0, -1 },

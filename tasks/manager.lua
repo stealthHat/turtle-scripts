@@ -10,13 +10,13 @@ local function readNumber()
 end
 
 print "xStart and zStart"
-local xStart, zStart = 2246, -1087 --readNumber(), readNumber()
+local xStart, zStart = readNumber(), readNumber()
 print "xEnd and zEnd"
-local xEnd, zEnd = 2186,-1149 --readNumber(), readNumber()
+local xEnd, zEnd = readNumber(), readNumber()
 print "yStart"
-local yNextJob = 63 --readNumber()
+local yNextJob = readNumber()
 print "yEnd"
-local qDepth = 5 --readNumber()
+local qDepth = readNumber()
 print "Quarry width"
 local qDist = readNumber()
 
