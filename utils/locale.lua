@@ -1,8 +1,7 @@
 local locale = {}
 
+locale.state = {}
 locale["actions"] = require "utils.actions"
-
-State = {}
 
 local bumps = {
   north = { 0, 0, -1 },
@@ -33,19 +32,19 @@ function locale.calibrate()
   local nx, ny, nz = gps.locate()
 
   if nx == sx + 1 then
-    State.orientation = "east"
+    locale.state.orientation = "east"
   elseif nx == sx - 1 then
-    State.orientation = "west"
+    locale.state.orientation = "west"
   elseif nz == sz + 1 then
-    State.orientation = "south"
+    locale.state.orientation = "south"
   else
-    State.orientation = "north"
+    locale.state.orientation = "north"
   end
 
-  State.location = { x = nx, y = ny, z = nz }
-  State.init_location = { x = sx, y = sy, z = sz }
-  State.init_orientation = State.orientation
-  print("Calibrated to " .. State.location.x .. "," .. State.location.y .. "," .. State.location.z .. " facing " .. State.orientation)
+  locale.state.location = { x = nx, y = ny, z = nz }
+  locale.state.init_location = { x = sx, y = sy, z = sz }
+  locale.state.init_orientation = locale.state.orientation
+  print("Calibrated to " .. locale.state.location.x .. "," .. locale.state.location.y .. "," .. locale.state.location.z .. " facing " .. locale.state.orientation)
 
   locale.move "back"
 
@@ -57,19 +56,19 @@ local function log_movement(direction)
   local bump
 
   if direction == "up" then
-    State.location.y = State.location.y + 1
+    locale.state.location.y = locale.state.location.y + 1
   elseif direction == "down" then
-    State.location.y = State.location.y - 1
+    locale.state.location.y = locale.state.location.y - 1
   elseif direction == "forward" then
-    bump = bumps[State.orientation]
-    State.location = { x = State.location.x + bump[1], y = State.location.y + bump[2], z = State.location.z + bump[3] }
+    bump = bumps[locale.state.orientation]
+    locale.state.location = { x = locale.state.location.x + bump[1], y = locale.state.location.y + bump[2], z = locale.state.location.z + bump[3] }
   elseif direction == "back" then
-    bump = bumps[State.orientation]
-    State.location = { x = State.location.x - bump[1], y = State.location.y - bump[2], z = State.location.z - bump[3] }
+    bump = bumps[locale.state.orientation]
+    locale.state.location = { x = locale.state.location.x - bump[1], y = locale.state.location.y - bump[2], z = locale.state.location.z - bump[3] }
   elseif direction == "left" then
-    State.orientation = left_shift[State.orientation]
+    locale.state.orientation = left_shift[locale.state.orientation]
   elseif direction == "right" then
-    State.orientation = right_shift[State.orientation]
+    locale.state.orientation = right_shift[locale.state.orientation]
   end
 
   return true
@@ -83,17 +82,17 @@ function locale.move(direction, nodig)
 end
 
 function locale.face(orientation)
-  if State.orientation == orientation then
+  if locale.state.orientation == orientation then
     return true
-  elseif right_shift[State.orientation] == orientation then
+  elseif right_shift[locale.state.orientation] == orientation then
     if not locale.move "right" then
       return false
     end
-  elseif left_shift[State.orientation] == orientation then
+  elseif left_shift[locale.state.orientation] == orientation then
     if not locale.move "left" then
       return false
     end
-  elseif right_shift[right_shift[State.orientation]] == orientation then
+  elseif right_shift[right_shift[locale.state.orientation]] == orientation then
     if not locale.move "right" then
       return false
     end
@@ -108,34 +107,34 @@ function locale.face(orientation)
 end
 
 function locale.go_to(location)
-  if location.x < State.location.x then
+  if location.x < locale.state.location.x then
     locale.face "west"
-    while location.x < State.location.x do
+    while location.x < locale.state.location.x do
       locale.move "forward"
     end
   end
-  if location.x > State.location.x then
+  if location.x > locale.state.location.x then
     locale.face "east"
-    while location.x > State.location.x do
+    while location.x > locale.state.location.x do
       locale.move "forward"
     end
   end
-  if location.z < State.location.z then
+  if location.z < locale.state.location.z then
     locale.face "north"
-    while location.z < State.location.z do
+    while location.z < locale.state.location.z do
       locale.move "forward"
     end
   end
-  if location.z > State.location.z then
+  if location.z > locale.state.location.z then
     locale.face "south"
-    while location.z > State.location.z do
+    while location.z > locale.state.location.z do
       locale.move "forward"
     end
   end
-  while location.y < State.location.y do
+  while location.y < locale.state.location.y do
     locale.move "down"
   end
-  while location.y > State.location.y do
+  while location.y > locale.state.location.y do
     locale.move "up"
   end
 end
