@@ -30,7 +30,6 @@ local function drop_items()
     turtle.select(1)
     turtle.drop()
   end
-
   for num = 2, 16 do
     turtle.select(num)
     turtle.drop()
