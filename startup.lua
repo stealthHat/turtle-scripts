@@ -14,7 +14,17 @@ shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/i
 shell.run("cd", "..")
 shell.run "clear"
 
-local galery = require "tasks.galery"
+if turtle then
+  rednet.close "right"
+  rednet.open "right"
 
-print "Starting Galery"
-galery.main()
+  local task = read()
+  if task == "quarry" then
+    print "Starting quarry"
+    local quarry = require "tasks.quarry"
+    quarry.main()
+  elseif task == "galery" then
+    print "Galery Task"
+    require "tasks.galery"
+  end
+end

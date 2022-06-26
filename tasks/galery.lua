@@ -17,33 +17,29 @@ local function go_to_y(y, dir)
   end
 end
 
-function galery.main()
-  print "dig down"
-  local ore = tonumber(read())
+print "dig down"
+local ore = tonumber(read())
 
-  go_to_y(ore, "down")
+go_to_y(ore, "down")
 
-  dig_galery(50)
+dig_galery(50)
 
-  turtle.turnRight()
-  dig_galery(1)
-  turtle.turnRight()
+turtle.turnRight()
+dig_galery(1)
+turtle.turnRight()
 
-  dig_galery(50)
+dig_galery(50)
 
-  turtle.turnRight()
-  dig_galery(1)
-  turtle.turnLeft()
+turtle.turnRight()
+dig_galery(1)
+turtle.turnLeft()
 
-  galery.dig_galery(50)
+galery.dig_galery(50)
 
-  turtle.turnLeft()
-  dig_galery(1)
-  turtle.turnLeft()
+turtle.turnLeft()
+dig_galery(1)
+turtle.turnLeft()
 
-  dig_galery(50)
+dig_galery(50)
 
-  go_to_y(ore, "up")
-end
-
-return galery
+go_to_y(ore, "up")

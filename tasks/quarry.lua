@@ -61,50 +61,64 @@ local function inventory_full()
   end
 end
 
+local function move(direction)
+  if direction == "forward" then
+    inventory_full()
+    refuel()
+    turtle.digUp()
+    turtle.digDown()
+    locale.move "forward"
+  elseif direction == "down" then
+    if locale.state.location.y > quarry.depth then
+      locale.move "down"
+    end
+  end
+end
+
 local function check_forward()
   inventory_full()
   refuel()
   turtle.digUp()
   turtle.digDown()
   locale.move "forward"
+  turtle.digUp()
+  turtle.digDown()
 end
 
-local function dig_layer(x, z, area, depth)
-  for num = 1, area do
-    for _ = 1, (area - 1) do
+local function dig_layer(x, z, width)
+  for num = 1, width do
+    for _ = 1, (width - 1) do
       check_forward()
     end
-    if (num % 2) == 1 and num < area then
+    if (num % 2) == 1 and num < width then
       locale.move "left"
       check_forward()
       locale.move "left"
-    elseif num < area then
+    elseif num < width then
       locale.move "right"
       check_forward()
       locale.move "right"
     end
   end
 
-  turtle.digUp()
-  turtle.digDown()
   local position = { x = x, y = locale.state.location.y, z = z }
   locale.go_to(position)
   locale.face(locale.state.init_orientation)
 
   for _ = 1, 3 do
-    if locale.state.location.y > depth then
-      locale.move "down"
-    end
+    move "down"
   end
 end
 
-local function dig_quarry(x, y, z, area, depth)
-  local position = { x = x, y = y, z = z }
+local function dig_quarry(job)
+  local position = { x = quarry.job.x, y = quarry.job.y, z = quarry.job.z }
+  local layer = { x = quarry.job.x, z = quarry.job.z, area = quarry.job.area }
+
   locale.go_to(position)
   locale.face(locale.state.init_orientation)
 
-  while locale.state.location.y > depth do
-    dig_layer(x, z, area, depth)
+  while locale.state.location.y > job.depth do
+    dig_layer(layer)
   end
 
   print "Quarry done, getting another job"
@@ -117,14 +131,10 @@ local function get_job()
     rednet.send(manager, "getJob")
     local _, message, _ = rednet.receive()
     if message == "yes" then
-      local job = {}
-      local _, quarry, _ = rednet.receive()
-      local _, y, _ = rednet.receive()
-      local _, z, _ = rednet.receive()
-      local _, q_dist, _ = rednet.receive()
-      local _, q_depth, _ = rednet.receive()
-      print("Job available at " .. x .. " " .. z)
-      dig_quarry(tonumber(x), tonumber(y), tonumber(z), tonumber(q_dist), tonumber(q_depth))
+      quarry.job = { x = rednet.receive(), z = rednet.receive(), y = rednet.receive(), q_dist = rednet.receive(), q_depth = rednet.receive() }
+      tonumber(quarry.job)
+      print("Job available at " .. quarry.job.x .. " " .. quarry.job.z)
+      dig_quarry(quarry.job)
       print "Quarry done"
     elseif message == "no" then
       print "No more jobs, going home"
