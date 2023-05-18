@@ -52,6 +52,7 @@ end
 local function refuel()
   if turtle.getFuelLevel() > 5000 then
   elseif not locale.actions.refuel() then
+    locale.actions.drop_useless_blocks()
     print "Turtle has no Coal, backing to get some"
     drop_items()
     locale.move "left"
@@ -97,12 +98,15 @@ local function dig_layer(x, z, area, depth)
 
   turtle.digUp()
   turtle.digDown()
+  inventory_full()
   local position = { x = x, y = State.location.y, z = z }
   locale.go_to(position)
   locale.face(State.init_orientation)
 
+  inventory_full()
   for _ = 1, 3 do
     if State.location.y > depth then
+      inventory_full()
       locale.move "down"
     end
   end
