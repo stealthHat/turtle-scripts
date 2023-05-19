@@ -50,7 +50,7 @@ local function drop_items()
 end
 
 local function refuel()
-  if turtle.getFuelLevel() > 5000 then
+  if turtle.getFuelLevel() > 3000 then
   elseif not locale.actions.refuel() then
     locale.actions.drop_useless_blocks()
     print "Turtle has no Coal, backing to get some"
