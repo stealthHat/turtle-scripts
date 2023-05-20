@@ -54,6 +54,6 @@ blocks.useless_blocks = "quark:limestone "
 --  .. "consistency_plus:cobbled_calcite "
 --  .. "consistency_plus:cobbled_sandstone "
 
-blocks.fuel_blocks = "minecraft:charcoal minecraft:coal immersiveengineering:coke immersiveengineering:coal_coke"
+blocks.fuel_blocks = "minecraft:charcoal minecraft:coal quark:charcoal_block immersiveengineering:coke immersiveengineering:coal_coke"
 
 return blocks
