@@ -1,4 +1,4 @@
-function stackAndOrganizeItems()
+local function stackAndOrganizeItems()
     for i = 1, 16 do
         local currentSlot = turtle.getItemDetail(i)
         if currentSlot then
@@ -27,4 +27,4 @@ function stackAndOrganizeItems()
     turtle.select(1)
 end
 
-stackItems()
+stackAndOrganizeItems()
