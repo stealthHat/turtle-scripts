@@ -1,4 +1,4 @@
-local function stackItems()
+function stackAndOrganizeItems()
     for i = 1, 16 do
         local currentSlot = turtle.getItemDetail(i)
         if currentSlot then
@@ -9,7 +9,11 @@ local function stackItems()
                     turtle.transferTo(i)
                 end
             end
-        else
+        end
+    end
+
+    for i = 1, 16 do
+        if not turtle.getItemDetail(i) then
             for j = i + 1, 16 do
                 if turtle.getItemDetail(j) then
                     turtle.select(j)
@@ -19,6 +23,7 @@ local function stackItems()
             end
         end
     end
+
     turtle.select(1)
 end
 
