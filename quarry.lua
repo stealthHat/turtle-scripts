@@ -64,6 +64,7 @@ end
 local function inventory_full()
   if turtle.getItemCount(16) > 0 then
     locale.actions.drop_useless_blocks()
+    locale.actions.stack_and_organize_items()
     if turtle.getItemCount(16) > 0 then
       print "Inventory is full returning items"
       drop_items()
