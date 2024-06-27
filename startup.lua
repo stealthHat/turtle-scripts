@@ -1,8 +1,8 @@
 shell.run("rm", "*.lua")
 shell.run("rm", "utils tasks")
 shell.run("mkdir", "utils tasks")
+shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/inventory.lua")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/quarry.lua")
-shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/galery.lua")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/startup.lua")
 shell.run("cd", "utils")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/utils/block.lua")
@@ -11,7 +11,6 @@ shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/i
 shell.run("cd", "..")
 shell.run("cd", "tasks")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/tasks/manager.lua")
-shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/inventory/tasks/inventory.lua")
 shell.run("cd", "..")
 shell.run "clear"
 
