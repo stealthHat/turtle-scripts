@@ -9,6 +9,14 @@ local function stackItems()
                     turtle.transferTo(i)
                 end
             end
+        else
+            for j = i + 1, 16 do
+                if turtle.getItemDetail(j) then
+                    turtle.select(j)
+                    turtle.transferTo(i)
+                    break
+                end
+            end
         end
     end
     turtle.select(1)
