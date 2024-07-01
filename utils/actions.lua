@@ -30,55 +30,44 @@ local inspect = {
   down = turtle.inspectDown,
 }
 
-function actions.move(direction, nodig)
-  if string.find("left right back", direction) then
-    nodig = true
+function actions.move_to(direction)
+  if string.find(direction, "left right back") then
+    move[direction]()
+    return true
   end
-  if not nodig then
-    while detect[direction]() do
-      local success, data = inspect[direction]()
-      if success and string.find(data.name, "turtle") then
-        sleep(1)
-      else
-        dig[direction]()
-      end
+
+  while detect[direction]() do
+    local success, data = inspect[direction]()
+
+    if success and string.find(data.name, "turtle") then
+      sleep(1)
     end
   end
-  if not move[direction]() then
-    return false
-  end
-  return true
+
+  move[direction]()
 end
 
 function actions.refuel()
-  local curSlot = turtle.getSelectedSlot()
-  local data = turtle.getItemDetail(1)
+  local item = turtle.getItemDetail(1)
 
-  if data and string.find(actions.fuel_blocks, data.name) then
+  if item and string.find(actions.fuel_blocks, item.name) then
     turtle.select(1)
     turtle.refuel()
-    turtle.select(curSlot)
-    print("turtle refiled, current fuel level is: " .. turtle.getFuelLevel())
-
     return true
-  else
-    print "No fuel to use"
-    return false
   end
+
+  return false
 end
 
 function actions.drop_useless_blocks()
-  local curSlot = turtle.getSelectedSlot()
+  for i = 1, 16 do
+    local item = turtle.getItemDetail(i)
 
-  for slot = 1, 16 do
-    local item = turtle.getItemDetail(slot)
     if item and string.find(actions.useless_blocks, item.name) then
-      turtle.select(slot)
+      turtle.select(i)
       turtle.drop()
     end
   end
-
-  turtle.select(curSlot)
 end
 
 function actions.stack_and_organize_items()
@@ -106,8 +95,6 @@ function actions.stack_and_organize_items()
       end
     end
   end
-
-  turtle.select(1)
 end
 
 return actions
