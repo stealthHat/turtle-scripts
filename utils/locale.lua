@@ -1,7 +1,5 @@
 local locale = {}
 
-locale["actions"] = require "utils.actions"
-
 State = {}
 
 local bumps = {
@@ -43,11 +41,11 @@ function locale.calibrate()
     State.facing = "north"
   end
 
-  State.location = { x = sx, y = sy, z = sz }
-  State.init_location = { x = sx, y = sy, z = sz }
+  State.coord = { x = sx, y = sy, z = sz }
+  State.init_coord = { x = sx, y = sy, z = sz }
   State.init_facing = State.facing
 
-  print("Calibrated to " .. State.location.x .. "," .. State.location.y .. "," .. State.location.z .. " facing " .. State.facing)
+  print("Calibrated to " .. State.coord.x .. "," .. State.coord.y .. "," .. State.coord.z .. " facing " .. State.facing)
 end
 
 function locale.face(side)
@@ -75,54 +73,63 @@ function locale.face(side)
   return true
 end
 
--- used on move
-function locale.log_movement(direction)
+function locale.update_coord(direction)
   local bump
 
-  if direction == "up" then
-    State.location.y = State.location.y + 1
-  elseif direction == "down" then
-    State.location.y = State.location.y - 1
-  elseif direction == "forward" then
+  if direction == "forward" then
     bump = bumps[State.facing]
-    State.location = { x = State.location.x + bump[1], y = State.location.y + bump[2], z = State.location.z + bump[3] }
-  elseif direction == "back" then
-    bump = bumps[State.facing]
-    State.location = { x = State.location.x - bump[1], y = State.location.y - bump[2], z = State.location.z - bump[3] }
+    State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
+    return true
   end
 
-  return true
+  if direction == "back" then
+    bump = bumps[State.facing]
+    State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
+    return true
+  end
+
+  if direction == "up" then
+    State.coord.y = State.coord.y + 1
+    return true
+  end
+
+  if direction == "down" then
+    State.coord.y = State.coord.y - 1
+    return true
+  end
+
+  return false
 end
 
-function locale.go_to(location)
-  if location.x < State.location.x then
+function locale.go_to(coord)
+  if coord.x < State.coord.x then
     locale.face "west"
-    while location.x < State.location.x do
+    while coord.x < State.coord.x do
       locale.move "forward"
     end
   end
-  if location.x > State.location.x then
+  if coord.x > State.coord.x then
     locale.face "east"
-    while location.x > State.location.x do
+    while coord.x > State.coord.x do
       locale.move "forward"
     end
   end
-  if location.z < State.location.z then
+  if coord.z < State.coord.z then
     locale.face "north"
-    while location.z < State.location.z do
+    while coord.z < State.coord.z do
       locale.move "forward"
     end
   end
-  if location.z > State.location.z then
+  if coord.z > State.coord.z then
     locale.face "south"
-    while location.z > State.location.z do
+    while coord.z > State.coord.z do
       locale.move "forward"
     end
   end
-  while location.y < State.location.y do
+  while coord.y < State.coord.y do
     locale.move "down"
   end
-  while location.y > State.location.y do
+  while coord.y > State.coord.y do
     locale.move "up"
   end
 end
