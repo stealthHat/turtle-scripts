@@ -50,6 +50,25 @@ function actions.move(direction)
   return true
 end
 
+function actions.dig(direction)
+  local tries = 10
+
+  while detect[direction]() do
+    while not dig[direction]() do
+      print "yoooo"
+      sleep(1)
+      tries = tries - 1
+
+      if tries == 0 then
+        printError("can't dig " .. direction)
+        return false
+      end
+    end
+  end
+
+  return true
+end
+
 function actions.refuel()
   local item = turtle.getItemDetail(1)
 
