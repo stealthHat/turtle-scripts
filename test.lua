@@ -1,3 +1,7 @@
-local locale = require "utils.actions"
+local actions = require "utils.actions"
 
-locale.move "up"
+if actions.refuel() then
+  print "yes"
+else
+  print "no"
+end

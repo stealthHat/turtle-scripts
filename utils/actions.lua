@@ -60,6 +60,7 @@ function actions.refuel()
     return true
   end
 
+  printError "no fuel to use"
   return false
 end
 
