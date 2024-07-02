@@ -30,7 +30,7 @@ local inspect = {
   down = turtle.inspectDown,
 }
 
-function actions.move_to(direction)
+function actions.move(direction)
   local tries = 10
 
   if string.find(direction, "left right") then
