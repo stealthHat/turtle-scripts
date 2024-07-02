@@ -30,7 +30,7 @@ function locale.calibrate()
 
   local sx, sy, sz = gps.locate(10, false)
   turtle.forward()
-  local nx, ny, nz = gps.locate(10, false)
+  local nx, _, nz = gps.locate(10, false)
   turtle.back()
 
   if nx == sx + 1 then
@@ -67,7 +67,7 @@ function locale.face(side)
     return turtle.turnLeft()
   end
 
-  if right_shift[right_shift[State.orientation]] == side then
+  if right_shift[right_shift[State.facing]] == side then
     State.facing = side
     return turtle.turnRight() and turtle.turnRight()
   end
