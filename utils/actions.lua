@@ -50,17 +50,17 @@ function actions.move(direction)
   return true
 end
 
-function actions.dig(direction)
+function actions.dig()
   local tries = 10
 
-  while detect[direction]() do
-    while not dig[direction]() do
-      print "yoooo"
+  while turtle.detect() do
+    while not turtle.dig() do
+      print "alooo"
       sleep(1)
       tries = tries - 1
 
       if tries == 0 then
-        printError("can't dig " .. direction)
+        printError "can't dig forward"
         return false
       end
     end
