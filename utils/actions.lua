@@ -12,24 +12,6 @@ local move = {
   right = turtle.turnRight,
 }
 
-local dig = {
-  forward = turtle.dig,
-  up = turtle.digUp,
-  down = turtle.digDown,
-}
-
-local detect = {
-  forward = turtle.detect,
-  up = turtle.detectUp,
-  down = turtle.detectDown,
-}
-
-local inspect = {
-  forward = turtle.inspect,
-  up = turtle.inspectUp,
-  down = turtle.inspectDown,
-}
-
 function actions.move(direction)
   local tries = 10
 
@@ -55,7 +37,6 @@ function actions.dig()
 
   while turtle.detect() do
     while not turtle.dig() do
-      print "alooo"
       sleep(1)
       tries = tries - 1
 
