@@ -33,7 +33,7 @@ local inspect = {
 function actions.move(direction)
   local tries = 10
 
-  if string.find(direction, "left right") then
+  if string.find("left right", direction) then
     return move[direction]()
   end
 
@@ -53,7 +53,7 @@ end
 function actions.refuel()
   local item = turtle.getItemDetail(1)
 
-  if item and string.find(item.name, actions.fuel_blocks) then
+  if item and string.find(actions.fuel_blocks, item.name) then
     turtle.select(1)
     return turtle.refuel()
   end
@@ -66,7 +66,7 @@ function actions.drop_useless_blocks()
   for i = 1, 16 do
     local item = turtle.getItemDetail(i)
 
-    if item and string.find(item.name, actions.useless_blocks) then
+    if item and string.find(actions.useless_blocks, item.name) then
       turtle.select(i)
       turtle.drop()
     end
