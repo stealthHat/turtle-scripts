@@ -34,8 +34,7 @@ function actions.move(direction)
   local tries = 10
 
   if string.find(direction, "left right") then
-    move[direction]()
-    return true
+    return move[direction]()
   end
 
   while not move[direction]() do
@@ -56,8 +55,7 @@ function actions.refuel()
 
   if item and string.find(item.name, actions.fuel_blocks) then
     turtle.select(1)
-    turtle.refuel()
-    return true
+    return turtle.refuel()
   end
 
   printError "no fuel to use"
