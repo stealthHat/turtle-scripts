@@ -31,20 +31,24 @@ local inspect = {
 }
 
 function actions.move_to(direction)
-  if string.find(direction, "left right back") then
+  local tries = 10
+
+  if string.find(direction, "left right") then
     move[direction]()
     return true
   end
 
-  while detect[direction]() do
-    local success, data = inspect[direction]()
+  while not move[direction]() do
+    sleep(1)
+    tries = tries - 1
 
-    if success and string.find(data.name, "turtle") then
-      sleep(1)
+    if tries == 0 then
+      printError("can't move " .. direction)
+      return false
     end
   end
 
-  move[direction]()
+  return true
 end
 
 function actions.refuel()
