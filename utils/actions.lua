@@ -24,8 +24,7 @@ function actions.move(direction)
     tries = tries - 1
 
     if tries == 0 then
-      printError("can't move " .. direction)
-      return false
+      error("can't move " .. direction)
     end
   end
 
@@ -41,8 +40,7 @@ function actions.dig()
       tries = tries - 1
 
       if tries == 0 then
-        printError "can't dig forward"
-        return false
+        error "can't dig forward"
       end
     end
   end

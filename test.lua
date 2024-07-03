@@ -1,6 +1,6 @@
 local actions = require "utils.actions"
 
-if actions.dig "forward" then
+if actions.move "forward" then
   print "yes"
 else
   print "no"

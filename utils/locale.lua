@@ -101,37 +101,4 @@ function locale.update_coord(direction)
   return false
 end
 
-function locale.go_to(coord)
-  if coord.x < State.coord.x then
-    locale.face "west"
-    while coord.x < State.coord.x do
-      locale.move "forward"
-    end
-  end
-  if coord.x > State.coord.x then
-    locale.face "east"
-    while coord.x > State.coord.x do
-      locale.move "forward"
-    end
-  end
-  if coord.z < State.coord.z then
-    locale.face "north"
-    while coord.z < State.coord.z do
-      locale.move "forward"
-    end
-  end
-  if coord.z > State.coord.z then
-    locale.face "south"
-    while coord.z > State.coord.z do
-      locale.move "forward"
-    end
-  end
-  while coord.y < State.coord.y do
-    locale.move "down"
-  end
-  while coord.y > State.coord.y do
-    locale.move "up"
-  end
-end
-
 return locale
