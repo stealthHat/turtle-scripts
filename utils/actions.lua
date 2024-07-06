@@ -4,22 +4,34 @@ local fuel_blocks = require("utils.block").fuel_blocks
 local useless_blocks = require("utils.block").useless_blocks
 
 local move = {
-  forward = turtle.forward,
-  up = turtle.up,
-  down = turtle.down,
-  back = turtle.back,
-  left = turtle.turnLeft,
-  right = turtle.turnRight,
+  forward = turtle.forward(),
+  up = turtle.up(),
+  down = turtle.down(),
+  back = turtle.back(),
+  left = turtle.turnLeft(),
+  right = turtle.turnRight(),
+}
+
+local detect = {
+  forward = turtle.detect(),
+  up = turtle.detectUp(),
+  down = turtle.detectDown(),
+}
+
+local dig = {
+  forward = turtle.dig(),
+  up = turtle.digUp(),
+  down = turtle.digDown(),
 }
 
 function actions.move(direction)
   local tries = 10
 
   if string.find("left right", direction) then
-    return move[direction]()
+    return move[direction]
   end
 
-  while not move[direction]() do
+  while not move[direction] do
     sleep(1)
     tries = tries - 1
 
@@ -31,16 +43,16 @@ function actions.move(direction)
   return true
 end
 
-function actions.dig()
+function actions.dig(direction)
   local tries = 10
 
-  while turtle.detect() do
-    while not turtle.dig() do
+  while detect[direction] do
+    while not dig[direction] do
       sleep(1)
       tries = tries - 1
 
       if tries == 0 then
-        error "can't dig forward"
+        error("can't dig " .. direction)
       end
     end
   end
@@ -49,6 +61,10 @@ function actions.dig()
 end
 
 function actions.refuel()
+  if turtle.getFuelLevel() > 5000 then
+    return true
+  end
+
   local item = turtle.getItemDetail(1)
 
   if item and string.find(fuel_blocks, item.name) then

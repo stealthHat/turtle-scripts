@@ -1,6 +1,15 @@
 local locale = {}
 
-State = {}
+local actions = require "utils.actions"
+
+State = {
+  coord = nil,
+  facing = nil,
+  init_coord = nil,
+  init_facing = nil,
+  prog_coord = nil,
+  prog_facing = nil,
+}
 
 local bumps = {
   north = { 0, 0, -1 },
@@ -49,10 +58,8 @@ function locale.calibrate()
 end
 
 function locale.face(side)
-  local current_orientation = State.side
-
-  if current_orientation == side then
-    return true
+  if State.facing == side then
+    return
   end
 
   if right_shift[State.facing] == side then
@@ -69,36 +76,86 @@ function locale.face(side)
     State.facing = side
     return turtle.turnRight() and turtle.turnRight()
   end
-
-  return true
 end
 
-function locale.update_coord(direction)
+function locale.update_state(direction)
   local bump
 
   if direction == "forward" then
     bump = bumps[State.facing]
     State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
-    return true
+    return
+  end
+
+  if direction == "left" then
+    State.facing = left_shift[State.facing]
+    return
+  end
+
+  if direction == "right" then
+    State.facing = right_shift[State.facing]
+    return
+  end
+
+  if direction == "up" then
+    State.coord.y = State.coord.y + 1
+    return
+  end
+
+  if direction == "down" then
+    State.coord.y = State.coord.y - 1
+    return
   end
 
   if direction == "back" then
     bump = bumps[State.facing]
     State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
-    return true
+    return
+  end
+end
+
+function locale.go_to(coord)
+  if State.coord.x < coord.x then
+    locale.face "east"
+
+    while State.coord.x < coord.x do
+      actions.move "forward"
+      locale.update_state "forward"
+    end
+  else
+    locale.face "west"
+
+    while State.coord.x > coord.x do
+      actions.move "forward"
+      locale.update_state "forward"
+    end
   end
 
-  if direction == "up" then
-    State.coord.y = State.coord.y + 1
-    return true
+  if State.coord.z < coord.z then
+    locale.face "south"
+
+    while State.coord.z < coord.z do
+      actions.move "forward"
+      locale.update_state "forward"
+    end
+  else
+    locale.face "north"
+
+    while State.coord.z > coord.z do
+      actions.move "forward"
+      locale.update_state "forward"
+    end
   end
 
-  if direction == "down" then
-    State.coord.y = State.coord.y - 1
-    return true
+  while State.coord.y < coord.y do
+    actions.move "up"
+    locale.update_state "up"
   end
 
-  return false
+  while State.coord.y > coord.y do
+    actions.move "down"
+    locale.update_state "down"
+  end
 end
 
 return locale

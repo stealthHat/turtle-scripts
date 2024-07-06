@@ -1,5 +1,5 @@
-rednet.close("back")
-rednet.open("back")
+rednet.close "back"
+rednet.open "back"
 
 rednet.host("manager", "manager")
 

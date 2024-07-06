@@ -1,71 +1,71 @@
 local locale = require "utils.locale"
+local actions = require "utils.actions"
+local movements = require "utils.movements"
 
 local manager = rednet.lookup("manager", "manager")
-local jobAvailable = true
+local lane = os.getComputerLabel():gsub("%D+", "")
+local work = true
 
-local function go_home(lane)
-  State.prog_location = { x = State.location.x, y = State.location.y, z = State.location.z }
-  State.prog_orientation = State.orientation
+local function go_to_lane()
+  local up = (State.init_coord.y - State.location.y) + lane
+  for _ = 1, up do
+    actions.move "up"
+  end
+end
 
-  Go_to_lane(lane)
+local function go_home()
+  State.prog_coord = { x = State.coord.x, y = State.coord.y, z = State.coord.z }
+  State.prog_facing = State.facing
 
-  locale.go_to(State.init_location)
+  go_to_lane()
+  movements.go_to(State.init_location)
   locale.face(State.init_orientation)
 end
 
 local function back_to_work()
-  Go_to_lane(Get_lane())
+  go_to_lane()
 
-  locale.go_to(State.prog_location)
-  locale.face(State.prog_orientation)
-end
-
-function Get_lane()
-  return os.getComputerLabel():gsub("%D+", "") + 2
-end
-
-function Go_to_lane(lane)
-  local up = (State.init_location.y - State.location.y) + lane
-  for _ = 1, up do
-    locale.move "up"
-  end
+  locale.go_to(State.prog_coord)
+  locale.face(State.prog_facing)
 end
 
 local function drop_items()
-  go_home(Get_lane())
-  locale.move "right"
+  go_home()
 
-  local data = turtle.getItemDetail(1)
+  actions.move "right"
 
-  if data and not string.find(locale.actions.fuel_blocks, data.name) then
+  local item = turtle.getItemDetail(1)
+
+  if item and not string.find(locale.actions.fuel_blocks, item.name) then
     turtle.select(1)
     turtle.drop()
   end
-  for num = 2, 16 do
-    turtle.select(num)
+
+  for slot = 2, 16 do
+    turtle.select(slot)
     turtle.drop()
   end
-  turtle.select(1)
-  locale.face(State.init_orientation)
+
+  locale.face(State.init_facing)
 end
 
-local function refuel()
-  if turtle.getFuelLevel() > 3000 then
-  elseif not locale.actions.refuel() then
-    locale.actions.drop_useless_blocks()
+local function health_check()
+  if ! actions.refuel() then
     print "Turtle has no Coal, backing to get some"
     drop_items()
     locale.move "left"
     turtle.suck()
     back_to_work()
   end
-end
 
-local function inventory_full()
-  if turtle.getItemCount(16) > 0 then
-    locale.actions.drop_useless_blocks()
-    locale.actions.stack_and_organize_items()
-    if turtle.getItemCount(16) > 0 then
+  if turtle.getItemCount(15) > 0 then
+    actions.drop_useless_blocks()
+
+    if turtle.getItemCount(15) > 0 then
+      actions.stack_and_organize_items()
+    end
+
+    if turtle.getItemCount(15) > 0 then
       print "Inventory is full returning items"
       drop_items()
       back_to_work()
@@ -73,61 +73,77 @@ local function inventory_full()
   end
 end
 
-local function check_forward()
-  inventory_full()
-  refuel()
-  turtle.digUp()
-  turtle.digDown()
-  locale.move "forward"
+local function mineLayer(x, z, width)
+  for row = 1, width do
+    for col = 1, width - 1 do
+      digAndMoveForward()
+    end
+
+    if row < width then
+      if row % 2 == 1 then
+        turtle.turnRight()
+        digAndMoveForward()
+        turtle.turnRight()
+      else
+        turtle.turnLeft()
+        digAndMoveForward()
+        turtle.turnLeft()
+      end
+    end
+  end
 end
 
-local function dig_layer(x, z, area, depth)
-  for num = 1, area do
-    for _ = 1, (area - 1) do
-      check_forward()
+local function dig_layer(x, z, width, depth)
+  for row = 1, width do
+    for _ = 1, (width - 1) do
+      health_check()
+      actions.dig "forward"
+      actions.dig "up"
+      actions.dig "down"
     end
-    if (num % 2) == 1 and num < area then
+    if (row % 2) == 1 and row < width then
       locale.move "left"
-      check_forward()
+      health_check()
       locale.move "left"
-    elseif num < area then
+    elseif row < width then
       locale.move "right"
-      check_forward()
+      health_check()
       locale.move "right"
     end
   end
 
-  turtle.digUp()
-  turtle.digDown()
-  inventory_full()
+  health_check()
+  actions.dig "forward"
+  actions.dig "up"
+  actions.dig "down"
   local position = { x = x, y = State.location.y, z = z }
   locale.go_to(position)
   locale.face(State.init_orientation)
+  health_check()
 
-  inventory_full()
   for _ = 1, 3 do
     if State.location.y > depth then
-      inventory_full()
+      health_check()
       locale.move "down"
     end
   end
 end
 
-local function dig_quarry(x, y, z, area, depth)
+local function dig_quarry(x, y, z, width, depth)
   local position = { x = x, y = y, z = z }
   locale.go_to(position)
   locale.face(State.init_orientation)
 
   while State.location.y > depth do
-    dig_layer(x, z, area, depth)
+    dig_layer(x, z, width, depth)
   end
 
   print "Quarry done, getting another job"
-  Go_to_lane(Get_lane())
+  go_to_lane()
 end
 
 local function get_job()
-  while jobAvailable do
+  while work do
     print "Requesting Job"
     rednet.send(manager, "getJob")
     local _, message, _ = rednet.receive()
@@ -142,13 +158,13 @@ local function get_job()
       print "Quarry done"
     elseif message == "no" then
       print "No more jobs, going home"
-      jobAvailable = false
-      go_home(Get_lane())
+      work = false
+      go_home()
     end
   end
 end
 
-refuel()
+actions.refuel()
 locale.calibrate()
-Go_to_lane(Get_lane())
+go_to_lane()
 get_job()
