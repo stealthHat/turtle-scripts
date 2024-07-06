@@ -8,8 +8,6 @@ local move = {
   up = turtle.up(),
   down = turtle.down(),
   back = turtle.back(),
-  left = turtle.turnLeft(),
-  right = turtle.turnRight(),
 }
 
 local detect = {
@@ -26,10 +24,6 @@ local dig = {
 
 function actions.move(direction)
   local tries = 10
-
-  if string.find("left right", direction) then
-    return move[direction]
-  end
 
   while not move[direction] do
     sleep(1)
@@ -60,8 +54,8 @@ function actions.dig(direction)
   return true
 end
 
-function actions.refuel()
-  if turtle.getFuelLevel() > 5000 then
+function actions.refuel(min_fuel)
+  if turtle.getFuelLevel() > min_fuel then
     return true
   end
 

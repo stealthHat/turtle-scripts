@@ -1,15 +1,14 @@
-local locale = require "utils.locale"
+local gps = require "utils.gps"
 local actions = require "utils.actions"
-local movements = require "utils.movements"
 
 local manager = rednet.lookup("manager", "manager")
 local lane = os.getComputerLabel():gsub("%D+", "")
 local work = true
 
 local function go_to_lane()
-  local up = (State.init_coord.y - State.location.y) + lane
+  local up = (State.init_coord.y - State.coord.y) + lane
   for _ = 1, up do
-    actions.move "up"
+    gps.move "up"
   end
 end
 
@@ -18,25 +17,26 @@ local function go_home()
   State.prog_facing = State.facing
 
   go_to_lane()
-  movements.go_to(State.init_location)
-  locale.face(State.init_orientation)
+
+  gps.go_to(State.init_coord)
+  gps.face(State.init_facing)
 end
 
 local function back_to_work()
   go_to_lane()
 
-  locale.go_to(State.prog_coord)
-  locale.face(State.prog_facing)
+  gps.go_to(State.prog_coord)
+  gps.face(State.prog_facing)
 end
 
 local function drop_items()
   go_home()
 
-  actions.move "right"
+  gps.turn "right"
 
   local item = turtle.getItemDetail(1)
 
-  if item and not string.find(locale.actions.fuel_blocks, item.name) then
+  if item and not string.find(gps.actions.fuel_blocks, item.name) then
     turtle.select(1)
     turtle.drop()
   end
@@ -45,15 +45,14 @@ local function drop_items()
     turtle.select(slot)
     turtle.drop()
   end
-
-  locale.face(State.init_facing)
 end
 
 local function health_check()
-  if ! actions.refuel() then
+  if ! actions.refuel(5000) then
     print "Turtle has no Coal, backing to get some"
     drop_items()
-    locale.move "left"
+    gps.face(State.init_facing)
+    gps.turn "left"
     turtle.suck()
     back_to_work()
   end
@@ -73,69 +72,50 @@ local function health_check()
   end
 end
 
-local function mineLayer(x, z, width)
-  for row = 1, width do
-    for col = 1, width - 1 do
-      digAndMoveForward()
-    end
-
-    if row < width then
-      if row % 2 == 1 then
-        turtle.turnRight()
-        digAndMoveForward()
-        turtle.turnRight()
-      else
-        turtle.turnLeft()
-        digAndMoveForward()
-        turtle.turnLeft()
-      end
-    end
-  end
+local function health_and_act(func)
+  func()
+  health_check()
 end
 
-local function dig_layer(x, z, width, depth)
+local function move_and_dig()
+  health_and_act(actions.dig "forward")
+  health_and_act(actions.move "forward")
+  health_and_act(actions.dig "up")
+  health_and_act(actions.dig "down")
+end
+
+local function dig_layer(width)
   for row = 1, width do
     for _ = 1, (width - 1) do
-      health_check()
-      actions.dig "forward"
-      actions.dig "up"
-      actions.dig "down"
+      move_and_dig()
     end
-    if (row % 2) == 1 and row < width then
-      locale.move "left"
-      health_check()
-      locale.move "left"
+
+    if row < width and row % 2 == 1 then
+      gps.turn "left"
+      move_and_dig()
+      gps.turn "left"
     elseif row < width then
-      locale.move "right"
-      health_check()
-      locale.move "right"
-    end
-  end
-
-  health_check()
-  actions.dig "forward"
-  actions.dig "up"
-  actions.dig "down"
-  local position = { x = x, y = State.location.y, z = z }
-  locale.go_to(position)
-  locale.face(State.init_orientation)
-  health_check()
-
-  for _ = 1, 3 do
-    if State.location.y > depth then
-      health_check()
-      locale.move "down"
+      gps.turn "right"
+      move_and_dig()
+      gps.turn "right"
     end
   end
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  local position = { x = x, y = y, z = z }
-  locale.go_to(position)
-  locale.face(State.init_orientation)
+  gps.go_to({ x = x, y = y, z = z })
+  gps.face(State.init_orientation)
 
-  while State.location.y > depth do
-    dig_layer(x, z, width, depth)
+  while depth < State.location.y do
+    dig_layer(width)
+    gps.go_to({ x = x, y = State.coord.y, z = z })
+
+    for _ = 1, 3 do
+      if depth < State.location.y then
+        health_and_act(actions.dig "down")
+        health_and_act(actions.move "down")
+      end
+    end
   end
 
   print "Quarry done, getting another job"
@@ -164,7 +144,7 @@ local function get_job()
   end
 end
 
-actions.refuel()
-locale.calibrate()
+actions.refuel(5000)
+gps.calibrate()
 go_to_lane()
 get_job()
