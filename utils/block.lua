@@ -61,6 +61,6 @@ blocks.useless_blocks = "quark:limestone "
   .. "mysticalagriculture:inferium_essence "
   .. "gtceu:marble_cobblestone "
 
-blocks.fuel_blocks = "minecraft:charcoal minecraft:coal quark:charcoal_block immersiveengineering:coke immersiveengineering:coal_coke gtceu:charcoal_block"
+blocks.fuel_blocks = "minecraft:charcoal minecraft:coal minecraft:coal_block quark:charcoal_block immersiveengineering:coke immersiveengineering:coal_coke gtceu:charcoal_block"
 
 return blocks
