@@ -1,6 +1,6 @@
 local gps = {}
 
-local actions = require "actions"
+local actions = require "../utils/actions"
 
 State = {
   coord = nil,

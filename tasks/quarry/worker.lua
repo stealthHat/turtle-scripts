@@ -1,5 +1,5 @@
-local gps = require "../utils/gps"
-local actions = require "../utils/actions"
+local gps = require "../../utils/gps"
+local actions = require "../../utils/actions"
 
 local lane = os.getComputerLabel():gsub("%D+", "")
 local work = true
