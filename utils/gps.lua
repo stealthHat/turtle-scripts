@@ -1,6 +1,6 @@
-local locale = {}
+local gps = {}
 
-local actions = require "utils.actions"
+local actions = require "actions"
 
 State = {
   coord = nil,
@@ -32,7 +32,7 @@ local right_shift = {
   west = "north",
 }
 
-function locale.calibrate()
+function gps.calibrate()
   print "Stating calibration"
 
   local sx, sy, sz = gps.locate(10, false)
@@ -57,7 +57,7 @@ function locale.calibrate()
   print("Calibrated to " .. State.coord.x .. "," .. State.coord.y .. "," .. State.coord.z .. " facing " .. State.facing)
 end
 
-function locale.face(cardinal_direction)
+function gps.face(cardinal_direction)
   if cardinal_direction == State.facing then
     return
   end
@@ -78,7 +78,7 @@ function locale.face(cardinal_direction)
   end
 end
 
-function locale.turn(side)
+function gps.turn(side)
   if side == "left" then
     turtle.turnLeft()
     State.facing = left_shift[State.facing]
@@ -88,7 +88,7 @@ function locale.turn(side)
   end
 end
 
-function locale.move(direction)
+function gps.move(direction)
   local bump
 
   if direction == "forward" then
@@ -118,42 +118,42 @@ function locale.move(direction)
   end
 end
 
-function locale.go_to(coord)
+function gps.go_to(coord)
   if State.coord.x < coord.x then
-    locale.face "east"
+    gps.face "east"
 
     while State.coord.x < coord.x do
-      locale.move "forward"
+      gps.move "forward"
     end
   else
-    locale.face "west"
+    gps.face "west"
 
     while State.coord.x > coord.x do
-      locale.move "forward"
+      gps.move "forward"
     end
   end
 
   if State.coord.z < coord.z then
-    locale.face "south"
+    gps.face "south"
 
     while State.coord.z < coord.z do
-      locale.move "forward"
+      gps.move "forward"
     end
   else
-    locale.face "north"
+    gps.face "north"
 
     while State.coord.z > coord.z do
-      locale.move "forward"
+      gps.move "forward"
     end
   end
 
   while State.coord.y < coord.y do
-    locale.move "up"
+    gps.move "up"
   end
 
   while State.coord.y > coord.y do
-    locale.move "down"
+    gps.move "down"
   end
 end
 
-return locale
+return gps

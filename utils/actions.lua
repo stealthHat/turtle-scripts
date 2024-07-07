@@ -1,7 +1,7 @@
 local actions = {}
 
-local fuel_blocks = require("utils.block").fuel_blocks
-local useless_blocks = require("utils.block").useless_blocks
+local fuel_blocks = require("block").fuel_blocks
+local useless_blocks = require("block").useless_blocks
 
 local move = {
   forward = turtle.forward(),
