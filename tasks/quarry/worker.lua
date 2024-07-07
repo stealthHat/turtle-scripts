@@ -5,6 +5,9 @@ local actions = require "utils.actions"
 
 local work = true
 
+print "control plane name"
+local control_plane_name = rednet.lookup("worker", read())
+
 local function go_to_lane()
   local up = (State.init_coord.y - State.coord.y) + os.getComputerLabel():gsub("%D+", "")
   for _ = 1, up do
@@ -148,9 +151,6 @@ local function get_job(control_plane)
     end
   end
 end
-
-print "control plane name"
-local control_plane_name = tostring(read())
 
 actions.refuel(5000)
 locale.calibrate()
