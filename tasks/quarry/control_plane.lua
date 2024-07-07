@@ -3,13 +3,11 @@ rednet.open "back"
 
 local job_queue = {}
 
+rednet.host("manager3", "manager3")
+
 local function read_number()
   return tonumber(read())
 end
-
-print "control plane name"
-local control_plane_name = tostring(read())
-rednet.host(control_plane_name, control_plane_name)
 
 print "x_start and z_start"
 local x_start, z_start = read_number(), read_number()

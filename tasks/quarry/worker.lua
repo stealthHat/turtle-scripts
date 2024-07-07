@@ -1,5 +1,7 @@
 package.path = package.path .. ";../../?.lua"
 
+local manager = rednet.lookup("manager3", "manager3")
+
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
@@ -148,8 +150,6 @@ local function get_job(control_plane)
     end
   end
 end
-
-local manager = rednet.lookup("test", "test")
 
 actions.refuel(5000)
 locale.calibrate()
