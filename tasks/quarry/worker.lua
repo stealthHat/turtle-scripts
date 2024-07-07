@@ -107,11 +107,11 @@ local function dig_quarry(x, y, z, width, depth)
   locale.go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
-  while depth < State.location.y do
+  while depth < State.coord.y do
     dig_layer(width)
     locale.go_to { x = x, y = State.coord.y, z = z }
 
-    if depth < State.location.y then
+    if depth < State.coord.y then
       act_and_check(actions.dig "down", inventory_check())
       act_and_check(actions.move "down", fuel_check())
     end
