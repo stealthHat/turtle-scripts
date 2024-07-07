@@ -149,11 +149,9 @@ local function get_job(control_plane)
   end
 end
 
-print "control plane name"
-local read = read()
-local control_plane_name = rednet.lookup(read, read)
+local manager = rednet.lookup("manager2", "manager2")
 
 actions.refuel(5000)
 locale.calibrate()
 go_to_lane()
-get_job(control_plane_name)
+get_job(manager)
