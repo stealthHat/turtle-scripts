@@ -1,3 +1,5 @@
+package.path = package.path .. ";../../?.lua"
+
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
