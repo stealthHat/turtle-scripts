@@ -1,6 +1,10 @@
 local gps = require "../../utils/gps"
 local actions = require "../../utils/actions"
 
+if not os.getComputerLabel() then
+  error "worker needs a label"
+end
+
 local lane = os.getComputerLabel():gsub("%D+", "")
 local work = true
 
