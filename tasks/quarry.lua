@@ -1,7 +1,6 @@
 local gps = require "utils.gps"
 local actions = require "utils.actions"
 
-local manager = rednet.lookup("manager", "manager")
 local lane = os.getComputerLabel():gsub("%D+", "")
 local work = true
 
@@ -148,6 +147,10 @@ local function get_job()
     end
   end
 end
+
+print "control plane name"
+local control_plane_name = tostring(read())
+local manager = rednet.lookup(control_plane_name, control_plane_name)
 
 actions.refuel(5000)
 gps.calibrate()
