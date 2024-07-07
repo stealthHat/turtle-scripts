@@ -150,6 +150,8 @@ local function get_job()
   end
 end
 
+rednet.close "right"
+rednet.open "right"
 actions.refuel(5000)
 locale.calibrate()
 go_to_lane()
