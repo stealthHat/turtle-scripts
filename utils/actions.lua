@@ -2,29 +2,29 @@ local actions = {}
 
 local block = require "utils.block"
 
-local move = {
-  forward = turtle.forward(),
-  up = turtle.up(),
-  down = turtle.down(),
-  back = turtle.back(),
+local move_direction = {
+  forward = turtle.forward,
+  up = turtle.up,
+  down = turtle.down,
+  back = turtle.back,
 }
 
-local detect = {
-  forward = turtle.detect(),
-  up = turtle.detectUp(),
-  down = turtle.detectDown(),
+local detect_direction = {
+  forward = turtle.detect,
+  up = turtle.detectUp,
+  down = turtle.detectDown,
 }
 
-local dig = {
-  forward = turtle.dig(),
-  up = turtle.digUp(),
-  down = turtle.digDown(),
+local dig_direction = {
+  forward = turtle.dig,
+  up = turtle.digUp,
+  down = turtle.digDown,
 }
 
 function actions.move(direction)
   local tries = 10
 
-  while not move[direction] do
+  while not move_direction[direction]() do
     sleep(1)
     tries = tries - 1
 
@@ -39,8 +39,8 @@ end
 function actions.dig(direction)
   local tries = 10
 
-  while detect[direction] do
-    while not dig[direction] do
+  while detect_direction[direction]() do
+    while not dig_direction[direction]() do
       sleep(1)
       tries = tries - 1
 
