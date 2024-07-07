@@ -35,9 +35,9 @@ local right_shift = {
 function locale.calibrate()
   print "Stating calibration"
 
-  local sx, sy, sz = locale.locate(10, false)
+  local sx, sy, sz = gps.locate(10, false)
   turtle.forward()
-  local nx, _, nz = locale.locate(10, false)
+  local nx, _, nz = gps.locate(10, false)
   turtle.back()
 
   if nx == sx + 1 then

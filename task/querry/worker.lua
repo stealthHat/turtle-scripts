@@ -1,7 +1,3 @@
-print "control plane name"
-local control_plane_name = tostring(read())
-local manager = rednet.lookup(control_plane_name, control_plane_name)
-
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
