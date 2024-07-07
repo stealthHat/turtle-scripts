@@ -6,7 +6,7 @@ shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/r
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/startup.lua")
 shell.run("cd", "utils")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/block.lua")
-shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/gps.lua")
+shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/locale.lua")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/actions.lua")
 shell.run("cd", "..")
 shell.run "clear"
