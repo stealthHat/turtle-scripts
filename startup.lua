@@ -8,9 +8,9 @@ shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/r
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/gps.lua")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/utils/actions.lua")
 shell.run("cd", "..")
-shell.run("cd", "tasks")
 shell.run("mkdir", "quarry")
+shell.run("cd", "tasks/quarry")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/tasks/quarry/control_plane.lua")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/refactor/tasks/quarry/worker.lua")
-shell.run("cd", "..")
+shell.run("cd", "../..")
 shell.run "clear"
