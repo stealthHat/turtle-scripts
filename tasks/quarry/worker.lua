@@ -1,6 +1,6 @@
 package.path = package.path .. ";../../?.lua"
 
-local manager = rednet.lookup("manager3", "manager3")
+local control_plane = rednet.lookup("manager3", "manager3")
 
 local locale = require "utils.locale"
 local actions = require "utils.actions"
@@ -124,7 +124,7 @@ local function dig_quarry(x, y, z, width, depth)
   go_to_lane()
 end
 
-local function get_job(control_plane)
+local function get_job()
   while work do
     print "Requesting Job"
     rednet.send(control_plane, "getJob")
@@ -154,4 +154,4 @@ end
 actions.refuel(5000)
 locale.calibrate()
 go_to_lane()
-get_job(manager)
+get_job()
