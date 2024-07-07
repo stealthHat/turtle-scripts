@@ -3,11 +3,10 @@ package.path = package.path .. ";../../?.lua"
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
-local lane = os.getComputerLabel():gsub("%D+", "")
 local work = true
 
 local function go_to_lane()
-  local up = (State.init_coord.y - State.coord.y) + lane
+  local up = (State.init_coord.y - State.coord.y) + os.getComputerLabel():gsub("%D+", "")
   for _ = 1, up do
     locale.move "up"
   end
@@ -123,10 +122,10 @@ local function dig_quarry(x, y, z, width, depth)
   go_to_lane()
 end
 
-local function get_job()
+local function get_job(control_plane)
   while work do
     print "Requesting Job"
-    rednet.send(manager, "getJob")
+    rednet.send(control_plane, "getJob")
 
     local _, message, _ = rednet.receive()
 
@@ -150,7 +149,10 @@ local function get_job()
   end
 end
 
+print "control plane name"
+local control_plane_name = tostring(read())
+
 actions.refuel(5000)
 locale.calibrate()
 go_to_lane()
-get_job()
+get_job(control_plane_name)
