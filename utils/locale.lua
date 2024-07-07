@@ -1,4 +1,4 @@
-local gps = {}
+local locale = {}
 
 local actions = require "utils.actions"
 
@@ -32,12 +32,12 @@ local right_shift = {
   west = "north",
 }
 
-function gps.calibrate()
+function locale.calibrate()
   print "Stating calibration"
 
-  local sx, sy, sz = gps.locate(10, false)
+  local sx, sy, sz = locale.locate(10, false)
   turtle.forward()
-  local nx, _, nz = gps.locate(10, false)
+  local nx, _, nz = locale.locate(10, false)
   turtle.back()
 
   if nx == sx + 1 then
@@ -57,7 +57,7 @@ function gps.calibrate()
   print("Calibrated to " .. State.coord.x .. "," .. State.coord.y .. "," .. State.coord.z .. " facing " .. State.facing)
 end
 
-function gps.face(cardinal_direction)
+function locale.face(cardinal_direction)
   if cardinal_direction == State.facing then
     return
   end
@@ -78,7 +78,7 @@ function gps.face(cardinal_direction)
   end
 end
 
-function gps.turn(side)
+function locale.turn(side)
   if side == "left" then
     turtle.turnLeft()
     State.facing = left_shift[State.facing]
@@ -88,7 +88,7 @@ function gps.turn(side)
   end
 end
 
-function gps.move(direction)
+function locale.move(direction)
   local bump
 
   if direction == "forward" then
@@ -118,42 +118,42 @@ function gps.move(direction)
   end
 end
 
-function gps.go_to(coord)
+function locale.go_to(coord)
   if State.coord.x < coord.x then
-    gps.face "east"
+    locale.face "east"
 
     while State.coord.x < coord.x do
-      gps.move "forward"
+      locale.move "forward"
     end
   else
-    gps.face "west"
+    locale.face "west"
 
     while State.coord.x > coord.x do
-      gps.move "forward"
+      locale.move "forward"
     end
   end
 
   if State.coord.z < coord.z then
-    gps.face "south"
+    locale.face "south"
 
     while State.coord.z < coord.z do
-      gps.move "forward"
+      locale.move "forward"
     end
   else
-    gps.face "north"
+    locale.face "north"
 
     while State.coord.z > coord.z do
-      gps.move "forward"
+      locale.move "forward"
     end
   end
 
   while State.coord.y < coord.y do
-    gps.move "up"
+    locale.move "up"
   end
 
   while State.coord.y > coord.y do
-    gps.move "down"
+    locale.move "down"
   end
 end
 
-return gps
+return locale

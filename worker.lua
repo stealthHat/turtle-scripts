@@ -1,4 +1,8 @@
-local gps = require "utils.gps"
+print "control plane name"
+local control_plane_name = tostring(read())
+local manager = rednet.lookup(control_plane_name, control_plane_name)
+
+local locale = require "utils.locale"
 local actions = require "utils.actions"
 
 local lane = os.getComputerLabel():gsub("%D+", "")
@@ -7,7 +11,7 @@ local work = true
 local function go_to_lane()
   local up = (State.init_coord.y - State.coord.y) + lane
   for _ = 1, up do
-    gps.move "up"
+    locale.move "up"
   end
 end
 
@@ -17,25 +21,25 @@ local function go_home()
 
   go_to_lane()
 
-  gps.go_to(State.init_coord)
-  gps.face(State.init_facing)
+  locale.go_to(State.init_coord)
+  locale.face(State.init_facing)
 end
 
 local function back_to_work()
   go_to_lane()
 
-  gps.go_to(State.prog_coord)
-  gps.face(State.prog_facing)
+  locale.go_to(State.prog_coord)
+  locale.face(State.prog_facing)
 end
 
 local function drop_items()
   go_home()
 
-  gps.turn "right"
+  locale.turn "right"
 
   local item = turtle.getItemDetail(1)
 
-  if item and not string.find(gps.actions.fuel_blocks, item.name) then
+  if item and not string.find(locale.actions.fuel_blocks, item.name) then
     turtle.select(1)
     turtle.drop()
   end
@@ -50,8 +54,8 @@ local function health_check()
   if not actions.refuel(5000) then
     print "Turtle has no Coal, backing to get some"
     drop_items()
-    gps.face(State.init_facing)
-    gps.turn "left"
+    locale.face(State.init_facing)
+    locale.turn "left"
     turtle.suck()
     back_to_work()
   end
@@ -90,24 +94,24 @@ local function dig_layer(width)
     end
 
     if row < width and row % 2 == 1 then
-      gps.turn "left"
+      locale.turn "left"
       move_and_dig()
-      gps.turn "left"
+      locale.turn "left"
     elseif row < width then
-      gps.turn "right"
+      locale.turn "right"
       move_and_dig()
-      gps.turn "right"
+      locale.turn "right"
     end
   end
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  gps.go_to { x = x, y = y, z = z }
-  gps.face(State.init_orientation)
+  locale.go_to { x = x, y = y, z = z }
+  locale.face(State.init_facing)
 
   while depth < State.location.y do
     dig_layer(width)
-    gps.go_to { x = x, y = State.coord.y, z = z }
+    locale.go_to { x = x, y = State.coord.y, z = z }
 
     for _ = 1, 3 do
       if depth < State.location.y then
@@ -148,11 +152,7 @@ local function get_job()
   end
 end
 
-print "control plane name"
-local control_plane_name = tostring(read())
-local manager = rednet.lookup(control_plane_name, control_plane_name)
-
 actions.refuel(5000)
-gps.calibrate()
+locale.calibrate()
 go_to_lane()
 get_job()
