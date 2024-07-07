@@ -1,6 +1,6 @@
 local locale = require "utils.locale"
 
-local manager = rednet.lookup("manager", "manager")
+local manager = rednet.lookup("manager2", "manager2")
 local jobAvailable = true
 
 local function go_home(lane)
