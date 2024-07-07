@@ -1,10 +1,9 @@
 package.path = package.path .. ";../../?.lua"
 
-local control_plane = rednet.lookup("manager3", "manager3")
-
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
+local control_plane = rednet.lookup("manager3", "manager3")
 local work = true
 
 local function go_to_lane()
