@@ -149,7 +149,7 @@ local function get_job(control_plane)
   end
 end
 
-local manager = rednet.lookup("manager2", "manager2")
+local manager = rednet.lookup("test", "test")
 
 actions.refuel(5000)
 locale.calibrate()
