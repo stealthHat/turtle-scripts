@@ -126,16 +126,21 @@ local function get_job()
   while work do
     print "Requesting Job"
     rednet.send(manager, "getJob")
+
     local _, message, _ = rednet.receive()
+
     if message == "yes" then
-      local _, x, _ = rednet.receive()
-      local _, y, _ = rednet.receive()
-      local _, z, _ = rednet.receive()
-      local _, q_dist, _ = rednet.receive()
-      local _, q_depth, _ = rednet.receive()
-      print("Job available at " .. x .. " " .. z)
-      dig_quarry(tonumber(x), tonumber(y), tonumber(z), tonumber(q_dist), tonumber(q_depth))
-      print "Quarry done"
+      local _, job_string, _ = rednet.receive()
+      local chunk = load("return " .. job_string)
+
+      if chunk then
+        local job = chunk()
+        print("Job available at " .. job.x .. " " .. job.z)
+
+        dig_quarry(job.x, job.y, job.z, job.width, job.depth)
+
+        print "Quarry done"
+      end
     elseif message == "no" then
       print "No more jobs, going home"
       work = false
