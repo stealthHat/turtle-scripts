@@ -48,7 +48,23 @@ local function drop_items()
   end
 end
 
-local function health_check()
+local function inventory_check()
+  if turtle.getItemCount(16) > 0 then
+    actions.drop_useless_blocks()
+
+    if turtle.getItemCount(16) > 0 then
+      actions.stack_and_organize_items()
+    end
+
+    if turtle.getItemCount(16) > 0 then
+      print "Inventory is full returning items"
+      drop_items()
+      back_to_work()
+    end
+  end
+end
+
+local function fuel_check()
   if not actions.refuel(5000) then
     print "Turtle has no Coal, backing to get some"
     drop_items()
@@ -57,32 +73,16 @@ local function health_check()
     turtle.suck()
     back_to_work()
   end
-
-  if turtle.getItemCount(15) > 0 then
-    actions.drop_useless_blocks()
-
-    if turtle.getItemCount(15) > 0 then
-      actions.stack_and_organize_items()
-    end
-
-    if turtle.getItemCount(15) > 0 then
-      print "Inventory is full returning items"
-      drop_items()
-      back_to_work()
-    end
-  end
 end
 
-local function health_and_act(func)
+local function act_and_check(func, check)
   func()
-  health_check()
+  check()
 end
 
 local function move_and_dig()
-  health_and_act(actions.dig "forward")
-  health_and_act(actions.move "forward")
-  health_and_act(actions.dig "up")
-  health_and_act(actions.dig "down")
+  act_and_check(actions.dig "forward", inventory_check())
+  act_and_check(actions.move "forward", fuel_check())
 end
 
 local function dig_layer(width)
@@ -111,11 +111,9 @@ local function dig_quarry(x, y, z, width, depth)
     dig_layer(width)
     locale.go_to { x = x, y = State.coord.y, z = z }
 
-    for _ = 1, 3 do
-      if depth < State.location.y then
-        health_and_act(actions.dig "down")
-        health_and_act(actions.move "down")
-      end
+    if depth < State.location.y then
+      act_and_check(actions.dig "down", inventory_check())
+      act_and_check(actions.move "down", fuel_check())
     end
   end
 
