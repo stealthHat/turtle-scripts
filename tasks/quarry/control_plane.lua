@@ -43,7 +43,7 @@ while #job_queue > 0 do
   print("Turtle " .. id .. " needs a job")
 
   if message == "get_job" then
-    local job = table.remove(job_queue)
+    local job = table.remove(job_queue,1)
     print("Assigning job at " .. job.x .. " " .. job.z)
     rednet.send(id, "yes")
     rednet.send(id, table_to_string(job))
