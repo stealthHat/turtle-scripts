@@ -47,7 +47,7 @@ local function drop_items()
 end
 
 local function health_check()
-  if ! actions.refuel(5000) then
+  if not actions.refuel(5000) then
     print "Turtle has no Coal, backing to get some"
     drop_items()
     gps.face(State.init_facing)
@@ -102,12 +102,12 @@ local function dig_layer(width)
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  gps.go_to({ x = x, y = y, z = z })
+  gps.go_to { x = x, y = y, z = z }
   gps.face(State.init_orientation)
 
   while depth < State.location.y do
     dig_layer(width)
-    gps.go_to({ x = x, y = State.coord.y, z = z })
+    gps.go_to { x = x, y = State.coord.y, z = z }
 
     for _ = 1, 3 do
       if depth < State.location.y then
