@@ -4,7 +4,6 @@ local locale = require "utils.locale"
 local actions = require "utils.actions"
 
 local control_plane = rednet.lookup("manager3", "manager3")
-print(control_plane)
 local work = true
 
 local function go_to_lane()
@@ -125,7 +124,7 @@ end
 local function get_job()
   while work do
     print "Requesting Job"
-    rednet.send(control_plane, "getJob")
+    rednet.send(control_plane, "get_job")
 
     local _, message, _ = rednet.receive()
 
