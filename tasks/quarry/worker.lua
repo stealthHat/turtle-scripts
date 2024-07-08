@@ -8,7 +8,7 @@ local work = true
 local function go_to_lane()
   local up = (State.init_coord.y - State.coord.y) + os.getComputerLabel():gsub("%D+", "")
   for _ = 1, up do
-    locale.move "up"
+    actions.dig_and_move "up"
   end
 end
 
@@ -18,14 +18,14 @@ local function go_home()
 
   go_to_lane()
 
-  locale.go_to(State.init_coord)
+  locale.go_to(State.init_coord, actions.dig_and_move)
   locale.face(State.init_facing)
 end
 
 local function back_to_work()
   go_to_lane()
 
-  locale.go_to(State.prog_coord)
+  locale.go_to(State.prog_coord, actions.dig_and_move)
   locale.face(State.prog_facing)
 end
 
@@ -77,45 +77,41 @@ end
 local function dig_layer(width)
   for row = 1, width do
     for _ = 1, width - 1 do
-      actions.dig "forward"
+      actions.dig_and_move "forward"
       inventory_check()
-      actions.move "forward"
       fuel_check()
     end
 
     if row < width then
       if row % 2 == 1 then
         locale.turn "left"
-        actions.dig "forward"
-        inventory_check()
-        actions.move "forward"
-        fuel_check()
+        actions.dig_and_move "forward"
         locale.turn "left"
+        inventory_check()
+        fuel_check()
       else
         locale.turn "right"
-        actions.dig "forward"
-        inventory_check()
-        actions.move "forward"
-        fuel_check()
+        actions.dig_and_move "forward"
         locale.turn "right"
+        inventory_check()
+        fuel_check()
       end
     end
   end
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  locale.go_to { x = x, y = y, z = z }
+  locale.go_to({ x = x, y = State.coord.y, z = z }, actions.dig_and_move)
   locale.face(State.init_facing)
 
   while depth < State.coord.y do
     dig_layer(width)
-    locale.go_to { x = x, y = State.coord.y, z = z }
+    locale.go_to({ x = x, y = State.coord.y, z = z }, actions.dig_and_move)
     locale.face(State.init_facing)
 
     if depth < State.coord.y then
-      actions.dig "down"
+      actions.dig_and_move "down"
       inventory_check()
-      actions.move "down"
     end
   end
 
