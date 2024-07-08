@@ -112,6 +112,7 @@ local function dig_quarry(x, y, z, width, depth)
   while depth < State.coord.y do
     dig_layer(width)
     locale.go_to { x = x, y = State.coord.y, z = z }
+    locale.face(State.init_facing)
 
     if depth < State.coord.y then
       actions.dig "down"
