@@ -76,31 +76,29 @@ end
 
 local function dig_layer(width)
   for row = 1, width do
-    for _ = 1, (width - 1) do
+    for _ = 1, width - 1 do
       actions.dig "forward"
       inventory_check()
       actions.move "forward"
       fuel_check()
     end
 
-    if row < width and row % 2 == 1 then
-      locale.turn "left"
-
-      actions.dig "forward"
-      inventory_check()
-      actions.move "forward"
-      fuel_check()
-
-      locale.turn "left"
-    elseif row < width then
-      locale.turn "right"
-
-      actions.dig "forward"
-      inventory_check()
-      actions.move "forward"
-      fuel_check()
-
-      locale.turn "right"
+    if row < width then
+      if row % 2 == 1 then
+        locale.turn "left"
+        actions.dig "forward"
+        inventory_check()
+        actions.move "forward"
+        fuel_check()
+        locale.turn "left"
+      else
+        locale.turn "right"
+        actions.dig "forward"
+        inventory_check()
+        actions.move "forward"
+        fuel_check()
+        locale.turn "right"
+      end
     end
   end
 end
