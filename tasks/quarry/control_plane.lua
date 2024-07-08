@@ -1,9 +1,4 @@
-rednet.close "back"
-rednet.open "back"
-
 local job_queue = {}
-
-rednet.host("manager3", "manager3")
 
 local function read_number()
   return tonumber(read())
@@ -20,11 +15,25 @@ local depth = read_number()
 print "Quarry width"
 local width = read_number()
 
-for x = x_start, x_end, -width do
-  for z = z_start, z_end, -width do
-    local x_job = math.max(x, x_end + width - 1)
-    local z_job = math.max(z, z_end + width - 1)
-    table.insert(job_queue, { x = x_job, y = y_start, z = z_job, width = width, depth = depth })
+local function make_jobs()
+  local minX = math.min(x_start, x_end)
+  local maxX = math.max(x_start, x_end)
+  local minZ = math.min(z_start, z_end)
+  local maxZ = math.max(z_start, z_end)
+
+  for x = minX, maxX, width do
+    for z = minZ, maxZ, width do
+      if x + width - 1 <= maxX and z + width - 1 <= maxZ then
+        local job = {
+          x = x,
+          y = y_start,
+          z = z,
+          width = width,
+          depth = depth,
+        }
+        table.insert(job_queue, job)
+      end
+    end
   end
 end
 
@@ -37,24 +46,34 @@ local function table_to_string(tbl)
   return str
 end
 
-while #job_queue > 0 do
-  print "Waiting for turtles"
-  local id, message, _ = rednet.receive()
-  print("Turtle " .. id .. " needs a job")
+local function run_jobs()
+  while #job_queue > 0 do
+    print "Waiting for turtles"
+    local id, message, _ = rednet.receive()
+    print("Turtle " .. id .. " needs a job")
 
-  if message == "get_job" then
-    local job = table.remove(job_queue,1)
-    print("Assigning job at " .. job.x .. " " .. job.z)
-    rednet.send(id, "yes")
-    rednet.send(id, table_to_string(job))
+    if message == "get_job" then
+      local job = table.remove(job_queue, 1)
+      print("Assigning job at " .. job.x .. " " .. job.z)
+      rednet.send(id, "yes")
+      rednet.send(id, table_to_string(job))
+    end
+  end
+
+  print "No Jobs available"
+
+  while true do
+    local id, message, _ = rednet.receive()
+    if message == "getJob" then
+      rednet.send(id, "no")
+    end
   end
 end
 
-print "No Jobs available"
+rednet.close "back"
+rednet.open "back"
 
-while true do
-  local id, message, _ = rednet.receive()
-  if message == "getJob" then
-    rednet.send(id, "no")
-  end
-end
+rednet.host("manager3", "manager3")
+
+make_jobs()
+run_jobs()

@@ -3,7 +3,6 @@ package.path = package.path .. ";../../?.lua"
 local locale = require "utils.locale"
 local actions = require "utils.actions"
 
-local control_plane = rednet.lookup("manager3", "manager3")
 local work = true
 
 local function go_to_lane()
@@ -75,29 +74,32 @@ local function fuel_check()
   end
 end
 
-local function act_and_check(func, check)
-  func()
-  check()
-end
-
-local function move_and_dig()
-  act_and_check(actions.dig "forward", inventory_check())
-  act_and_check(actions.move "forward", fuel_check())
-end
-
 local function dig_layer(width)
   for row = 1, width do
     for _ = 1, (width - 1) do
-      move_and_dig()
+      actions.dig "forward"
+      inventory_check()
+      actions.move "forward"
+      fuel_check()
     end
 
     if row < width and row % 2 == 1 then
       locale.turn "left"
-      move_and_dig()
+
+      actions.dig "forward"
+      inventory_check()
+      actions.move "forward"
+      fuel_check()
+
       locale.turn "left"
     elseif row < width then
       locale.turn "right"
-      move_and_dig()
+
+      actions.dig "forward"
+      inventory_check()
+      actions.move "forward"
+      fuel_check()
+
       locale.turn "right"
     end
   end
@@ -112,8 +114,9 @@ local function dig_quarry(x, y, z, width, depth)
     locale.go_to { x = x, y = State.coord.y, z = z }
 
     if depth < State.coord.y then
-      act_and_check(actions.dig "down", inventory_check())
-      act_and_check(actions.move "down", fuel_check())
+      actions.dig "down"
+      inventory_check()
+      actions.move "down"
     end
   end
 
@@ -121,7 +124,7 @@ local function dig_quarry(x, y, z, width, depth)
   go_to_lane()
 end
 
-local function get_job()
+local function get_job(control_plane)
   while work do
     print "Requesting Job"
     rednet.send(control_plane, "get_job")
@@ -150,7 +153,10 @@ end
 
 rednet.close "right"
 rednet.open "right"
+
+local control_plane_name = rednet.lookup("manager3", "manager3")
+
 actions.refuel(5000)
 locale.calibrate()
 go_to_lane()
-get_job()
+get_job(control_plane_name)
