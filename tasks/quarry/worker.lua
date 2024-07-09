@@ -101,7 +101,7 @@ local function dig_layer(width)
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  locale.go_to({ x = x, y = State.coord.y, z = z }, actions.dig_and_move)
+  locale.go_to({ x = x, y = y, z = z }, actions.dig_and_move)
   locale.face(State.init_facing)
 
   while depth < State.coord.y do
