@@ -170,9 +170,8 @@ local function dig_quarry(x, y, z, width, depth)
 
   while depth < State.coord.y do
     dig_layer(width)
-    go_to { x = x, y = State.coord.y, z = z }
-    locale.face(State.init_facing)
-
+    locale.turn "right"
+    locale.turn "right"
     if depth < State.coord.y then
       dig_and_move "down"
       inventory_check()
