@@ -70,6 +70,8 @@ function actions.refuel(min_fuel)
 end
 
 function actions.drop_useless_blocks()
+  local current_slot = turtle.getSelectedSlot()
+
   for i = 1, 16 do
     local item = turtle.getItemDetail(i)
 
@@ -78,15 +80,17 @@ function actions.drop_useless_blocks()
       turtle.drop()
     end
   end
+
+  turtle.select(current_slot)
 end
 
 function actions.stack_and_organize_items()
   for i = 1, 16 do
-    local currentSlot = turtle.getItemDetail(i)
-    if currentSlot then
+    local current_slot = turtle.getItemDetail(i)
+    if current_slot then
       for j = i + 1, 16 do
-        local compareSlot = turtle.getItemDetail(j)
-        if compareSlot and currentSlot.name == compareSlot.name then
+        local compare_slot = turtle.getItemDetail(j)
+        if compare_slot and current_slot.name == compare_slot.name then
           turtle.select(j)
           turtle.transferTo(i)
         end
