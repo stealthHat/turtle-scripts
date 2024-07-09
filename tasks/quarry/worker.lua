@@ -133,7 +133,7 @@ local function fuel_check()
     drop_items()
     locale.face(State.init_facing)
     locale.turn "left"
-    turtle.suck()
+    turtle.suck(64)
     back_to_work()
   end
 end
@@ -169,10 +169,10 @@ local function dig_quarry(x, y, z, width, depth)
   locale.face(State.init_facing)
 
   while depth < State.coord.y do
-    dig_layer(width)
-    locale.turn "back"
     dig_and_move "down"
     inventory_check()
+    dig_layer(width)
+    locale.turn "back"
   end
 
   print "Quarry done, getting another job"

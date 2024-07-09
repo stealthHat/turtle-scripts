@@ -24,9 +24,9 @@ local function make_jobs()
   for x = x_min, x_max, width do
     for z = z_min, z_max, width do
       local job = {
-        x = x,
+        x = x - width,
         y = y_start,
-        z = z,
+        z = z - width,
         width = width,
         depth = depth,
       }
