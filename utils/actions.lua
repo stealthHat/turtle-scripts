@@ -70,8 +70,6 @@ function actions.refuel(min_fuel)
 end
 
 function actions.drop_useless_blocks()
-  local current_slot = turtle.getSelectedSlot()
-
   for i = 1, 16 do
     local item = turtle.getItemDetail(i)
 
@@ -81,7 +79,7 @@ function actions.drop_useless_blocks()
     end
   end
 
-  turtle.select(current_slot)
+  turtle.select(1)
 end
 
 function actions.stack_and_organize_items()

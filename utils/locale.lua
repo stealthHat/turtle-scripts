@@ -82,9 +82,13 @@ function locale.turn(side)
   if side == "left" then
     turtle.turnLeft()
     State.facing = left_shift[State.facing]
-  else
+  elseif side == "right" then
     turtle.turnRight()
     State.facing = right_shift[State.facing]
+  else
+    turtle.turnRight()
+    turtle.turnRight()
+    State.facing = right_shift[right_shift[State.facing]]
   end
 end
 
