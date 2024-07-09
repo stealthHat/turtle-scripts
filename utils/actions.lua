@@ -107,6 +107,8 @@ function actions.stack_and_organize_items()
       end
     end
   end
+
+  turtle.select(1)
 end
 
 return actions
