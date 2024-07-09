@@ -10,29 +10,27 @@ print "x_end and z_end"
 local x_end, z_end = read_number(), read_number()
 print "y_start"
 local y_start = read_number()
-print "yEnd"
+print "y_end"
 local depth = read_number()
 print "Quarry width"
 local width = read_number()
 
 local function make_jobs()
-  local minX = math.min(x_start, x_end)
-  local maxX = math.max(x_start, x_end)
-  local minZ = math.min(z_start, z_end)
-  local maxZ = math.max(z_start, z_end)
+  local x_min = math.min(x_start, x_end)
+  local x_max = math.max(x_start, x_end)
+  local z_min = math.min(z_start, z_end)
+  local z_max = math.max(z_start, z_end)
 
-  for x = minX, maxX, width do
-    for z = minZ, maxZ, width do
-      if x + width - 1 <= maxX and z + width - 1 <= maxZ then
-        local job = {
-          x = x,
-          y = y_start,
-          z = z,
-          width = width,
-          depth = depth,
-        }
-        table.insert(job_queue, job)
-      end
+  for x = x_min, x_max, width do
+    for z = z_min, z_max, width do
+      local job = {
+        x = x,
+        y = y_start,
+        z = z,
+        width = width,
+        depth = depth,
+      }
+      table.insert(job_queue, job)
     end
   end
 end

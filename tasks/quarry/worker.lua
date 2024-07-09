@@ -171,10 +171,8 @@ local function dig_quarry(x, y, z, width, depth)
   while depth < State.coord.y do
     dig_layer(width)
     locale.turn "back"
-    if depth < State.coord.y then
-      dig_and_move "down"
-      inventory_check()
-    end
+    dig_and_move "down"
+    inventory_check()
   end
 
   print "Quarry done, getting another job"
