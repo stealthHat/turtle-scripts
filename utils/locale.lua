@@ -118,42 +118,4 @@ function locale.move(direction)
   end
 end
 
-function locale.go_to(coord, func)
-  if State.coord.x < coord.x then
-    locale.face "east"
-
-    while State.coord.x < coord.x do
-      func "forward"
-    end
-  else
-    locale.face "west"
-
-    while State.coord.x > coord.x do
-      func "forward"
-    end
-  end
-
-  if State.coord.z < coord.z then
-    locale.face "south"
-
-    while State.coord.z < coord.z do
-      func "forward"
-    end
-  else
-    locale.face "north"
-
-    while State.coord.z > coord.z do
-      func "forward"
-    end
-  end
-
-  while State.coord.y < coord.y do
-    func "up"
-  end
-
-  while State.coord.y > coord.y do
-    func "down"
-  end
-end
-
 return locale

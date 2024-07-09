@@ -21,12 +21,6 @@ local dig_direction = {
   down = turtle.digDown,
 }
 
-local inspect_direction = {
-  forward = turtle.inspect,
-  up = turtle.inspectUp,
-  down = turtle.inspectDown,
-}
-
 function actions.move(direction)
   local tries = 10
 
@@ -57,19 +51,6 @@ function actions.dig(direction)
   end
 
   return true
-end
-
-function actions.dig_and_move(direction)
-  while detect_direction[direction]() do
-    local success, data = inspect_direction[direction]()
-
-    if success and string.find(data.name, "turtle") then
-      sleep(1)
-    else
-      actions.dig(direction)
-      actions.move(direction)
-    end
-  end
 end
 
 function actions.refuel(min_fuel)

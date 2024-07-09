@@ -2,13 +2,77 @@ package.path = package.path .. ";../../?.lua"
 
 local locale = require "utils.locale"
 local actions = require "utils.actions"
+local block = require "utils.block"
 
 local work = true
+
+local inspect_direction = {
+  forward = turtle.inspect,
+  up = turtle.inspectUp,
+  down = turtle.inspectDown,
+}
+
+local detect_direction = {
+  forward = turtle.detect,
+  up = turtle.detectUp,
+  down = turtle.detectDown,
+}
+
+local function dig_and_move(direction)
+  while detect_direction[direction]() do
+    local success, data = inspect_direction[direction]()
+    if success and not string.find(data.name, "turtle") then
+      actions.dig(direction)
+    else
+      sleep(1)
+    end
+  end
+
+  locale.move(direction)
+end
+
+local function go_to(coord)
+  if State.coord.x < coord.x then
+    locale.face "east"
+
+    while State.coord.x < coord.x do
+      dig_and_move "forward"
+    end
+  else
+    locale.face "west"
+
+    while State.coord.x > coord.x do
+      dig_and_move "forward"
+    end
+  end
+
+  if State.coord.z < coord.z then
+    locale.face "south"
+
+    while State.coord.z < coord.z do
+      dig_and_move "forward"
+    end
+  else
+    locale.face "north"
+
+    while State.coord.z > coord.z do
+      dig_and_move "forward"
+    end
+  end
+
+  while State.coord.y < coord.y do
+    dig_and_move "up"
+  end
+
+  while State.coord.y > coord.y do
+    dig_and_move "down"
+  end
+end
 
 local function go_to_lane()
   local up = (State.init_coord.y - State.coord.y) + os.getComputerLabel():gsub("%D+", "")
   for _ = 1, up do
-    actions.dig_and_move "up"
+    dig_and_move "up"
   end
 end
 
@@ -18,14 +82,14 @@ local function go_home()
 
   go_to_lane()
 
-  locale.go_to(State.init_coord, actions.dig_and_move)
+  go_to(State.init_coord)
   locale.face(State.init_facing)
 end
 
 local function back_to_work()
   go_to_lane()
 
-  locale.go_to(State.prog_coord, actions.dig_and_move)
+  go_to(State.prog_coord)
   locale.face(State.prog_facing)
 end
 
@@ -36,7 +100,7 @@ local function drop_items()
 
   local item = turtle.getItemDetail(1)
 
-  if item and not string.find(locale.actions.fuel_blocks, item.name) then
+  if item and not string.find(block.fuel_blocks, item.name) then
     turtle.select(1)
     turtle.drop()
   end
@@ -77,7 +141,7 @@ end
 local function dig_layer(width)
   for row = 1, width do
     for _ = 1, width - 1 do
-      actions.dig_and_move "forward"
+      dig_and_move "forward"
       inventory_check()
       fuel_check()
     end
@@ -85,13 +149,13 @@ local function dig_layer(width)
     if row < width then
       if row % 2 == 1 then
         locale.turn "left"
-        actions.dig_and_move "forward"
+        dig_and_move "forward"
         locale.turn "left"
         inventory_check()
         fuel_check()
       else
         locale.turn "right"
-        actions.dig_and_move "forward"
+        dig_and_move "forward"
         locale.turn "right"
         inventory_check()
         fuel_check()
@@ -101,16 +165,16 @@ local function dig_layer(width)
 end
 
 local function dig_quarry(x, y, z, width, depth)
-  locale.go_to({ x = x, y = y, z = z }, actions.dig_and_move)
+  go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
   while depth < State.coord.y do
     dig_layer(width)
-    locale.go_to({ x = x, y = State.coord.y, z = z }, actions.dig_and_move)
+    go_to { x = x, y = State.coord.y, z = z }
     locale.face(State.init_facing)
 
     if depth < State.coord.y then
-      actions.dig_and_move "down"
+      dig_and_move "down"
       inventory_check()
     end
   end
