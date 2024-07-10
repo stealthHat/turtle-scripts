@@ -21,7 +21,7 @@ local inspect_direction = {
 local function dig_and_move(direction)
   while detect_direction[direction]() do
     local success, data = inspect_direction[direction]()
-    if success and not data.state["computercraft:turtle"] then
+    if success and not string.find(data.name, "turtle") then
       actions.dig(direction)
     else
       sleep(1)
