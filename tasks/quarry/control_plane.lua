@@ -62,7 +62,7 @@ local function run_jobs()
 
   while true do
     local id, message, _ = rednet.receive()
-    if message == "getJob" then
+    if message == "get_job" then
       rednet.send(id, "no")
     end
   end
