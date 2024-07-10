@@ -12,3 +12,16 @@ shell.run("cd", "tasks")
 shell.run("wget", "https://raw.githubusercontent.com/stealthHat/turtle-scripts/temp/tasks/manager.lua")
 shell.run("cd", "..")
 shell.run "clear"
+
+if turtle then
+  rednet.close "right"
+  rednet.open "right"
+
+  while true do
+    local _, message, _ = rednet.receive()
+    if message == "quarry" then
+      print "Starting quarry"
+      shell.run "quarry.lua"
+    end
+  end
+end
