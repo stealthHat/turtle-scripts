@@ -12,20 +12,12 @@ local inspect_direction = {
   down = turtle.inspectDown,
 }
 
-local detect_direction = {
-  forward = turtle.detect,
-  up = turtle.detectUp,
-  down = turtle.detectDown,
-}
-
 local function dig_and_move(direction)
-  while detect_direction[direction]() do
-    local success, data = inspect_direction[direction]()
-    if success and not string.find(data.name, "turtle") then
-      actions.dig(direction)
-    else
-      sleep(1)
-    end
+  local success, data = inspect_direction[direction]()
+  if success and not string.find(data.name, "turtle") then
+    actions.dig(direction)
+  else
+    sleep(3)
   end
 
   locale.move(direction)
@@ -100,7 +92,7 @@ local function drop_items()
 
   local item = turtle.getItemDetail(1)
 
-  if item and not string.find(block.fuel_blocks, item.name) then
+  if item and not block.fuel_blocks[item.name] then
     turtle.select(1)
     turtle.drop()
   end
@@ -185,7 +177,6 @@ local function get_job(control_plane)
     rednet.send(control_plane, "get_job")
 
     local _, message, _ = rednet.receive()
-
     if message == "yes" then
       local _, job_string, _ = rednet.receive()
       local chunk = load("return " .. job_string)

@@ -1,66 +1,74 @@
 local blocks = {}
 
-blocks.useless_blocks = "quark:limestone "
-  .. "quark:root_item "
-  .. "quark:smooth_basalt "
-  .. "quark:cobbled_deepslate "
-  .. "quark:jasper "
-  .. "quark:shale "
-  .. "cavesandcliffs:tuff "
-  .. "cavesandcliffs:raw_copper "
-  .. "cavesandcliffs:cobbled_deepslate "
-  .. "byg:scoria_cobblestone "
-  .. "byg:soapstone "
-  .. "byg:rocky_stone "
-  .. "create:limestone "
-  .. "create:ochrum "
-  .. "create:scoria "
-  .. "create:scorchia "
-  .. "create:crimsite "
-  .. "create:veridium "
-  .. "create:asurine "
-  .. "create:ochrum "
-  .. "create:weathered_limestone_cobblestone "
-  .. "supplementaries:flint_block "
-  .. "forbidden_arcanus:darkstone "
-  .. "sullysmod:rough_jade "
-  .. "minecraft:calcite "
-  .. "minecraft:soul_soil "
-  .. "minecraft:soorchia "
-  .. "minecraft:magma_block  "
-  .. "minecraft:blackstone "
-  .. "minecraft:basalt "
-  .. "minecraft:pointed_dripstone "
-  .. "minecraft:dripstone_block "
-  .. "minecraft:cobblestone "
-  .. "minecraft:dirt "
-  .. "minecraft:tuff "
-  .. "minecraft:gravel "
-  .. "minecraft:clay_ball "
-  .. "minecraft:smooth_basalt "
-  .. "minecraft:cobbled_deepslate "
-  .. "minecraft:sandstone "
-  .. "minecraft:flint "
-  .. "minecraft:granite "
-  .. "minecraft:terracotta "
-  --  .. "minecraft:andesite "
-  --  .. "minecraft:diorite "
-  --  .. "minecraft:sand "
-  --  .. "minecraft:raw_copper "
-  --  .. "minecraft:lapis_lazuli "
-  --  .. "minecraft:redstone "
-  .. "consistency_plus:cobbled_andesite "
-  .. "consistency_plus:cobbled_tuff "
-  .. "consistency_plus:cobbled_granite "
-  .. "consistency_plus:cobbled_dripstone "
-  .. "consistency_plus:cobbled_diorite "
-  .. "consistency_plus:cobbled_calcite "
-  .. "consistency_plus:cobbled_sandstone "
-  .. "twigs:pebble "
-  .. "twigs:rhyolite "
-  .. "mysticalagriculture:inferium_essence "
-  .. "gtceu:marble_cobblestone "
+blocks.useless_blocks = {
+  ["quark:limestone"] = true,
+  ["quark:root_item"] = true,
+  ["quark:smooth_basalt"] = true,
+  ["quark:cobbled_deepslate"] = true,
+  ["quark:jasper"] = true,
+  ["quark:shale"] = true,
+  ["cavesandcliffs:tuff"] = true,
+  ["cavesandcliffs:raw_copper"] = true,
+  ["cavesandcliffs:cobbled_deepslate"] = true,
+  ["byg:scoria_cobblestone"] = true,
+  ["byg:soapstone"] = true,
+  ["byg:rocky_stone"] = true,
+  ["create:limestone"] = true,
+  ["create:scoria"] = true,
+  ["create:scorchia"] = true,
+  ["create:crimsite"] = true,
+  ["create:veridium"] = true,
+  ["create:asurine"] = true,
+  ["create:ochrum"] = true,
+  ["create:weathered_limestone_cobblestone"] = true,
+  ["supplementaries:flint_block"] = true,
+  ["forbidden_arcanus:darkstone"] = true,
+  ["sullysmod:rough_jade"] = true,
+  ["minecraft:calcite"] = true,
+  ["minecraft:soul_soil"] = true,
+  ["minecraft:soorchia"] = true,
+  ["minecraft:magma_block "] = true,
+  ["minecraft:blackstone"] = true,
+  ["minecraft:basalt"] = true,
+  ["minecraft:pointed_dripstone"] = true,
+  ["minecraft:dripstone_block"] = true,
+  ["minecraft:cobblestone"] = true,
+  ["minecraft:dirt"] = true,
+  ["minecraft:tuff"] = true,
+  ["minecraft:gravel"] = true,
+  ["minecraft:clay_ball"] = true,
+  ["minecraft:smooth_basalt"] = true,
+  ["minecraft:cobbled_deepslate"] = true,
+  ["minecraft:sandstone"] = true,
+  ["minecraft:flint"] = true,
+  ["minecraft:granite"] = true,
+  ["minecraft:terracotta"] = true,
+  ["consistency_plus:cobbled_andesite"] = true,
+  ["consistency_plus:cobbled_tuff"] = true,
+  ["consistency_plus:cobbled_granite"] = true,
+  ["consistency_plus:cobbled_dripstone"] = true,
+  ["consistency_plus:cobbled_diorite"] = true,
+  ["consistency_plus:cobbled_calcite"] = true,
+  ["consistency_plus:cobbled_sandstone"] = true,
+  ["twigs:pebble"] = true,
+  ["twigs:rhyolite"] = true,
+  ["mysticalagriculture:inferium_essence"] = true,
+  ["gtceu:marble_cobblestone"] = true,
+  ["minecraft:andesite"] = true,
+  ["minecraft:diorite"] = true,
+  ["minecraft:raw_copper"] = true,
+  ["minecraft:lapis_lazuli"] = true,
+  -- ["minecraft:sand"] = true,
+  --  ["minecraft:redstone"] = true,
+}
 
-blocks.fuel_blocks = "minecraft:charcoal minecraft:coal quark:charcoal_block immersiveengineering:coke immersiveengineering:coal_coke gtceu:charcoal_block"
+blocks.fuel_blocks = {
+  ["minecraft:charcoal"] = true,
+  ["minecraft:coal "] = true,
+  ["quark:charcoal_block"] = true,
+  ["immersiveengineering:coke"] = true,
+  ["immersiveengineering:coal_coke"] = true,
+  ["gtceu:charcoal_block"] = true,
+}
 
 return blocks

@@ -60,7 +60,7 @@ function actions.refuel(min_fuel)
 
   local item = turtle.getItemDetail(1)
 
-  if item and string.find(block.fuel_blocks, item.name) then
+  if item and block.fuel_blocks[item.name] then
     turtle.select(1)
     return turtle.refuel()
   end
@@ -73,7 +73,7 @@ function actions.drop_useless_blocks()
   for i = 1, 16 do
     local item = turtle.getItemDetail(i)
 
-    if item and string.find(block.useless_blocks, item.name) then
+    if item and block.useless_blocks[item.name] then
       turtle.select(i)
       turtle.drop()
     end
