@@ -9,12 +9,6 @@ local move_direction = {
   back = turtle.back,
 }
 
-local detect_direction = {
-  forward = turtle.detect,
-  up = turtle.detectUp,
-  down = turtle.detectDown,
-}
-
 local dig_direction = {
   forward = turtle.dig,
   up = turtle.digUp,
@@ -39,14 +33,12 @@ end
 function actions.dig(direction)
   local tries = 10
 
-  while detect_direction[direction]() do
-    while not dig_direction[direction]() do
-      sleep(1)
-      tries = tries - 1
+  while not dig_direction[direction]() do
+    sleep(1)
+    tries = tries - 1
 
-      if tries == 0 then
-        error("can't dig " .. direction)
-      end
+    if tries == 0 then
+      error("can't dig " .. direction)
     end
   end
 

@@ -6,6 +6,12 @@ local block = require "utils.block"
 
 local work = true
 
+local detect_direction = {
+  forward = turtle.detect,
+  up = turtle.detectUp,
+  down = turtle.detectDown,
+}
+
 local inspect_direction = {
   forward = turtle.inspect,
   up = turtle.inspectUp,
@@ -13,11 +19,13 @@ local inspect_direction = {
 }
 
 local function dig_and_move(direction)
-  local success, data = inspect_direction[direction]()
-  if success and not string.find(data.name, "turtle") then
-    actions.dig(direction)
-  else
-    sleep(3)
+  while detect_direction[direction]() do
+    local success, data = inspect_direction[direction]()
+    if success and not data.state["computercraft:turtle"] then
+      actions.dig(direction)
+    else
+      sleep(1)
+    end
   end
 
   locale.move(direction)
