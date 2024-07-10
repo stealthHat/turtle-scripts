@@ -109,6 +109,8 @@ local function drop_items()
     turtle.select(slot)
     turtle.drop()
   end
+
+  turtle.select(1)
 end
 
 local function inventory_check()
