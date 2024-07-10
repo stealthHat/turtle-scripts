@@ -1,8 +1,15 @@
 local locale = {}
 
-locale["actions"] = require "utils.actions"
+local actions = require "utils.actions"
 
-State = {}
+State = {
+  coord = nil,
+  facing = nil,
+  init_coord = nil,
+  init_facing = nil,
+  prog_coord = nil,
+  prog_facing = nil,
+}
 
 local bumps = {
   north = { 0, 0, -1 },
@@ -27,116 +34,91 @@ local right_shift = {
 
 function locale.calibrate()
   print "Stating calibration"
-  local sx, sy, sz = gps.locate()
 
+  local sx, sy, sz = gps.locate(10, false)
   turtle.forward()
-  local nx, ny, nz = gps.locate()
+  local nx, _, nz = gps.locate(10, false)
+  turtle.back()
 
   if nx == sx + 1 then
-    State.orientation = "east"
+    State.facing = "east"
   elseif nx == sx - 1 then
-    State.orientation = "west"
+    State.facing = "west"
   elseif nz == sz + 1 then
-    State.orientation = "south"
+    State.facing = "south"
   else
-    State.orientation = "north"
+    State.facing = "north"
   end
 
-  State.location = { x = nx, y = ny, z = nz }
-  State.init_location = { x = sx, y = sy, z = sz }
-  State.init_orientation = State.orientation
-  print("Calibrated to " .. State.location.x .. "," .. State.location.y .. "," .. State.location.z .. " facing " .. State.orientation)
+  State.coord = { x = sx, y = sy, z = sz }
+  State.init_coord = { x = sx, y = sy, z = sz }
+  State.init_facing = State.facing
 
-  locale.move "back"
-
-  return true
+  print("Calibrated to " .. State.coord.x .. "," .. State.coord.y .. "," .. State.coord.z .. " facing " .. State.facing)
 end
 
--- used on move
-local function log_movement(direction)
+function locale.face(cardinal_direction)
+  if cardinal_direction == State.facing then
+    return
+  end
+
+  if cardinal_direction == right_shift[State.facing] then
+    State.facing = cardinal_direction
+    return turtle.turnRight()
+  end
+
+  if cardinal_direction == left_shift[State.facing] then
+    State.facing = cardinal_direction
+    return turtle.turnLeft()
+  end
+
+  if cardinal_direction == right_shift[right_shift[State.facing]] then
+    State.facing = cardinal_direction
+    return turtle.turnRight() and turtle.turnRight()
+  end
+end
+
+function locale.turn(side)
+  if side == "left" then
+    turtle.turnLeft()
+    State.facing = left_shift[State.facing]
+  elseif side == "right" then
+    turtle.turnRight()
+    State.facing = right_shift[State.facing]
+  else
+    turtle.turnRight()
+    turtle.turnRight()
+    State.facing = right_shift[right_shift[State.facing]]
+  end
+end
+
+function locale.move(direction)
   local bump
 
+  if direction == "forward" then
+    bump = bumps[State.facing]
+    actions.move(direction)
+    State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
+    return
+  end
+
   if direction == "up" then
-    State.location.y = State.location.y + 1
-  elseif direction == "down" then
-    State.location.y = State.location.y - 1
-  elseif direction == "forward" then
-    bump = bumps[State.orientation]
-    State.location = { x = State.location.x + bump[1], y = State.location.y + bump[2], z = State.location.z + bump[3] }
-  elseif direction == "back" then
-    bump = bumps[State.orientation]
-    State.location = { x = State.location.x - bump[1], y = State.location.y - bump[2], z = State.location.z - bump[3] }
-  elseif direction == "left" then
-    State.orientation = left_shift[State.orientation]
-  elseif direction == "right" then
-    State.orientation = right_shift[State.orientation]
+    actions.move(direction)
+    State.coord.y = State.coord.y + 1
+    return
   end
 
-  return true
-end
-
-function locale.move(direction, nodig)
-  locale.actions.move(direction, nodig)
-  log_movement(direction)
-
-  return true
-end
-
-function locale.face(orientation)
-  if State.orientation == orientation then
-    return true
-  elseif right_shift[State.orientation] == orientation then
-    if not locale.move "right" then
-      return false
-    end
-  elseif left_shift[State.orientation] == orientation then
-    if not locale.move "left" then
-      return false
-    end
-  elseif right_shift[right_shift[State.orientation]] == orientation then
-    if not locale.move "right" then
-      return false
-    end
-    if not locale.move "right" then
-      return false
-    end
-  else
-    return false
+  if direction == "down" then
+    actions.move(direction)
+    State.coord.y = State.coord.y - 1
+    return
   end
 
-  return true
-end
-
-function locale.go_to(location)
-  if location.x < State.location.x then
-    locale.face "west"
-    while location.x < State.location.x do
-      locale.move "forward"
-    end
-  end
-  if location.x > State.location.x then
-    locale.face "east"
-    while location.x > State.location.x do
-      locale.move "forward"
-    end
-  end
-  if location.z < State.location.z then
-    locale.face "north"
-    while location.z < State.location.z do
-      locale.move "forward"
-    end
-  end
-  if location.z > State.location.z then
-    locale.face "south"
-    while location.z > State.location.z do
-      locale.move "forward"
-    end
-  end
-  while location.y < State.location.y do
-    locale.move "down"
-  end
-  while location.y > State.location.y do
-    locale.move "up"
+  if direction == "back" then
+    bump = bumps[State.facing]
+    actions.move(direction)
+    State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
+    return
   end
 end
 
