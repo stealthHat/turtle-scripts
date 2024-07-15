@@ -4,6 +4,8 @@ local function read_number()
   return tonumber(read())
 end
 
+print "control plane name"
+local control_plane_name = read()
 print "x_start and z_start"
 local x_start, z_start = read_number(), read_number()
 print "x_end and z_end"
@@ -50,7 +52,7 @@ local function run_jobs()
     local id, message, _ = rednet.receive()
     print("Turtle " .. id .. " needs a job")
 
-    if message == "get_job" then
+    if id and message == "get_job" then
       local job = table.remove(job_queue, 1)
       print("Assigning job at " .. job.x .. " " .. job.z)
       rednet.send(id, "yes")
@@ -62,7 +64,7 @@ local function run_jobs()
 
   while true do
     local id, message, _ = rednet.receive()
-    if message == "get_job" then
+    if id and message == "get_job" then
       rednet.send(id, "no")
     end
   end
@@ -71,7 +73,9 @@ end
 rednet.close "back"
 rednet.open "back"
 
-rednet.host("manager3", "manager3")
+if control_plane_name then
+  rednet.host(control_plane_name, control_plane_name)
+end
 
 make_jobs()
 run_jobs()

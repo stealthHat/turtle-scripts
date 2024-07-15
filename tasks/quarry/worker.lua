@@ -5,6 +5,8 @@ local actions = require "utils.actions"
 local block = require "utils.block"
 
 local work = true
+local lane = os.getComputerLabel():gsub("%D+", "")
+local control_plane_name = os.getComputerLabel():gsub("%d", "")
 
 local detect_direction = {
   forward = turtle.detect,
@@ -70,7 +72,7 @@ local function go_to(coord)
 end
 
 local function go_to_lane()
-  local up = (State.init_coord.y - State.coord.y) + os.getComputerLabel():gsub("%D+", "")
+  local up = (State.init_coord.y - State.coord.y) + lane
   for _ = 1, up do
     dig_and_move "up"
   end
@@ -210,7 +212,7 @@ end
 rednet.close "right"
 rednet.open "right"
 
-local control_plane_name = rednet.lookup("manager3", "manager3")
+rednet.lookup(control_plane_name, control_plane_name)
 
 actions.refuel(5000)
 locale.calibrate()
