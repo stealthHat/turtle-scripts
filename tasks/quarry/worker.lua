@@ -19,19 +19,19 @@ local detect_direction = {
   down = turtle.detectDown,
 }
 
-local function dig_and_move(direction)
-  while detect_direction[direction]() do
-    local _, data = inspect_direction[direction]()
-    if not string.find(data.name, "turtle") then
-      actions.dig(direction)
+local function go_to(coord)
+  local function dig_and_move(direction)
+    while detect_direction[direction]() do
+      local _, data = inspect_direction[direction]()
+      if not string.find(data.name, "turtle") then
+        actions.dig(direction)
+      end
+      sleep(0.5)
     end
-    sleep(0.5)
+
+    locale.move(direction)
   end
 
-  locale.move(direction)
-end
-
-local function go_to(coord)
   local up = (State.init_coord.y - State.coord.y) + lane
   for _ = 1, up do
     dig_and_move "up"
@@ -124,32 +124,42 @@ local function dig_and_check(direction)
   inventory_check()
 end
 
-local function dig_layer(direction)
-  dig_and_check "up"
-  dig_and_check "down"
-
-  while detect_direction[direction]() do
-    dig_and_check "forward"
+local function dig_quarry(x, y, z, width)
+  local function move_down_three_times()
+    for i = 1, 3 do
+      if not dig_and_check "down" then
+        return false
+      end
+    end
+    locale.move "down"
+    return true
   end
 
-  locale.move(direction)
-  fuel_check()
-end
+  local function dig_layer()
+    dig_and_check "up"
+    dig_and_check "down"
 
-local function dig_quarry(x, y, z, width)
+    while detect_direction["forward"]() do
+      dig_and_check "forward"
+    end
+
+    locale.move "forward"
+    fuel_check()
+  end
+
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
-  while dig_and_check "down" and dig_and_check "down" and dig_and_check "down" do
+  while move_down_three_times() do
     for row = 1, width do
       for _ = 1, width - 1 do
-        dig_layer "forward"
+        dig_layer()
       end
 
       if row < width then
         local turn_direction = (row % 2 == 1) and "left" or "right"
         locale.turn(turn_direction)
-        dig_layer "forward"
+        dig_layer()
         locale.turn(turn_direction)
       end
     end
