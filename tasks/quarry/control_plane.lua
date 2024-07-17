@@ -10,8 +10,6 @@ print "x_start and z_start"
 local x_start, z_start = read_number(), read_number()
 print "x_end and z_end"
 local x_end, z_end = read_number(), read_number()
-print "y_start"
-local y_start = read_number()
 print "Quarry width"
 local width = read_number()
 
@@ -25,7 +23,6 @@ local function make_jobs()
     for z = z_min, z_max, width do
       local job = {
         x = x,
-        y = y_start,
         z = z,
         width = width,
       }

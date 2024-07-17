@@ -124,9 +124,9 @@ local function dig_and_check(direction)
   inventory_check()
 end
 
-local function dig_quarry(x, y, z, width)
+local function dig_quarry(x, z, width)
   local function move_down_three_times()
-    for i = 1, 3 do
+    for _ = 1, 3 do
       if not dig_and_check "down" then
         return false
       end
@@ -147,6 +147,15 @@ local function dig_quarry(x, y, z, width)
     fuel_check()
   end
 
+  local function move_to_start_position()
+    while not detect_direction["down"]() do
+      locale.move "down"
+    end
+  end
+
+  move_to_start_position()
+
+  local y = (State.init_coord.y - State.coord.y) + lane
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
@@ -177,7 +186,7 @@ local function get_job(control_plane)
       local _, job, _ = rednet.receive()
 
       if job then
-        dig_quarry(job.x, job.y, job.z, job.width)
+        dig_quarry(job.x, job.z, job.width)
       end
     elseif message == "no" then
       work = false
