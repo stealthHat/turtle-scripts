@@ -153,11 +153,11 @@ local function dig_quarry(x, z, width)
     end
   end
 
-  move_to_start_position()
-
   local y = (State.init_coord.y - State.coord.y) + lane
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
+
+  move_to_start_position()
 
   while move_down_three_times() do
     for row = 1, width do
