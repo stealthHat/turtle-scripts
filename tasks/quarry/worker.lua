@@ -154,6 +154,7 @@ local function dig_quarry(x, z, width)
     move_down(2)
   end
 
+  print "going to quarry coord"
   local y = (State.init_coord.y - State.coord.y) + lane
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
