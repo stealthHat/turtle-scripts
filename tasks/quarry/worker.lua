@@ -125,8 +125,8 @@ local function dig_and_check(direction)
 end
 
 local function dig_quarry(x, z, width)
-  local function move_down_three_times()
-    for _ = 1, 3 do
+  local function move_down(n)
+    for _ = 1, n do
       if not dig_and_check "down" then
         return false
       end
@@ -151,15 +151,18 @@ local function dig_quarry(x, z, width)
     while not detect_direction["down"]() do
       locale.move "down"
     end
+    move_down(2)
   end
 
   local y = (State.init_coord.y - State.coord.y) + lane
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
+  print "going to possition"
   move_to_start_position()
 
-  while move_down_three_times() do
+  while move_down(3) do
+    print "start layer"
     for row = 1, width do
       for _ = 1, width - 1 do
         dig_layer()
