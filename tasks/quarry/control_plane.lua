@@ -12,8 +12,6 @@ print "x_end and z_end"
 local x_end, z_end = read_number(), read_number()
 print "y_start"
 local y_start = read_number()
-print "y_end"
-local depth = read_number()
 print "Quarry width"
 local width = read_number()
 
@@ -30,20 +28,10 @@ local function make_jobs()
         y = y_start,
         z = z,
         width = width,
-        depth = depth,
       }
       table.insert(job_queue, job)
     end
   end
-end
-
-local function table_to_string(tbl)
-  local str = "{ "
-  for k, v in pairs(tbl) do
-    str = str .. k .. " = " .. tostring(v) .. ", "
-  end
-  str = str:sub(1, -2) .. " }"
-  return str
 end
 
 local function run_jobs()
@@ -56,7 +44,7 @@ local function run_jobs()
       local job = table.remove(job_queue, 1)
       print("Assigning job at " .. job.x .. " " .. job.z)
       rednet.send(id, "yes")
-      rednet.send(id, table_to_string(job))
+      rednet.send(id, job)
     end
   end
 

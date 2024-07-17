@@ -15,58 +15,77 @@ local dig_direction = {
   down = turtle.digDown,
 }
 
+local inspect_direction = {
+  forward = turtle.inspect,
+  up = turtle.inspectUp,
+  down = turtle.inspectDown,
+}
+
+local detect_direction = {
+  forward = turtle.detect,
+  up = turtle.detectUp,
+  down = turtle.detectDown,
+}
+
 function actions.move(direction)
-  local tries = 10
-
-  while not move_direction[direction]() do
-    sleep(1)
-    tries = tries - 1
-
-    if tries == 0 then
-      error("can't move " .. direction)
-    end
-  end
-
-  return true
-end
-
-function actions.dig(direction)
-  local tries = 10
-
-  while not dig_direction[direction]() do
-    sleep(1)
-    tries = tries - 1
-
-    if tries == 0 then
-      error("can't dig " .. direction)
-    end
-  end
-
-  return true
-end
-
-function actions.refuel(min_fuel)
-  if turtle.getFuelLevel() > min_fuel then
+  if move_direction[direction]() then
     return true
   end
 
-  local item = turtle.getItemDetail(1)
+  error("cannot move" .. direction)
+end
 
-  if item and block.fuel_blocks[item.name] then
-    turtle.select(1)
-    return turtle.refuel()
+function actions.dig(direction)
+  if not detect_direction[direction]() then
+    return true
   end
 
-  printError "no fuel to use"
-  return false
+  local _, data = inspect_direction[direction]()
+  return dig_direction[direction](), data.tags
+end
+
+function actions.is_inventory_full()
+  for slot = 1, 16 do
+    if turtle.getItemCount(slot) == 0 then
+      return false
+    end
+  end
+
+  return true
+end
+
+function actions.refuel()
+  for slot = 1, 16 do
+    local item = turtle.getItemDetail(slot)
+
+    if item and turtle.refuel(0) then
+      turtle.select(slot)
+      turtle.refuel()
+    end
+  end
+
+  turtle.select(1)
+end
+
+function actions.drop_blocks()
+  for slot = 1, 16 do
+    local item = turtle.getItemDetail(slot)
+
+    if item then
+      turtle.select(slot)
+      turtle.drop()
+    end
+  end
+
+  turtle.select(1)
 end
 
 function actions.drop_useless_blocks()
-  for i = 1, 16 do
-    local item = turtle.getItemDetail(i)
+  for slot = 1, 16 do
+    local item = turtle.getItemDetail(slot)
 
     if item and block.useless_blocks[item.name] then
-      turtle.select(i)
+      turtle.select(slot)
       turtle.drop()
     end
   end

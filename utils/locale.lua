@@ -3,12 +3,12 @@ local locale = {}
 local actions = require "utils.actions"
 
 State = {
-  coord = nil,
-  facing = nil,
-  init_coord = nil,
-  init_facing = nil,
-  prog_coord = nil,
-  prog_facing = nil,
+  coord = {},
+  facing = string,
+  init_coord = {},
+  init_facing = string,
+  prog_coord = {},
+  prog_facing = string,
 }
 
 local bumps = {
@@ -120,6 +120,11 @@ function locale.move(direction)
     State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
     return
   end
+end
+
+function locale.calculate_fuel_cost(coord_a, coord_b)
+  local cost = (math.abs(coord_b.x - coord_a.x) + math.abs(coord_a.y - coord_b.y) + math.abs(coord_a.z - coord_b.z)) * 2
+  return cost
 end
 
 return locale

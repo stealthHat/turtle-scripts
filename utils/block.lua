@@ -64,13 +64,4 @@ blocks.useless_blocks = {
   ["gtceu:marble_cobblestone"] = true,
 }
 
-blocks.fuel_blocks = {
-  ["minecraft:charcoal"] = true,
-  ["minecraft:coal "] = true,
-  ["quark:charcoal_block"] = true,
-  ["immersiveengineering:coke"] = true,
-  ["immersiveengineering:coal_coke"] = true,
-  ["gtceu:charcoal_block"] = true,
-}
-
 return blocks
