@@ -201,8 +201,6 @@ end
 rednet.close "right"
 rednet.open "right"
 
-rednet.lookup(control_plane_name, control_plane_name)
-
 actions.refuel()
 locale.calibrate()
-get_job(control_plane_name)
+get_job(rednet.lookup(control_plane_name, control_plane_name))
