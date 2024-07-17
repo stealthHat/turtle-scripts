@@ -4,6 +4,7 @@ local locale = require "utils.locale"
 local actions = require "utils.actions"
 
 local work = true
+local lane = os.getComputerLabel():gsub("%D+", "")
 local control_plane_name = os.getComputerLabel():gsub("%d", "")
 
 local inspect_direction = {
@@ -29,6 +30,11 @@ local function go_to(coord)
     end
 
     locale.move(direction)
+  end
+
+  local up = (State.init_coord.y - State.coord.y) + lane
+  for _ = 1, up do
+    dig_and_move "up"
   end
 
   local x_diff = coord.x - State.coord.x
@@ -149,7 +155,7 @@ local function dig_quarry(x, z, width)
   end
 
   print "going to quarry coord"
-  local y = State.init_coord.y
+  local y = State.init_coord.y + lane
   go_to { x = x, y = y, z = z }
   locale.face(State.init_facing)
 
