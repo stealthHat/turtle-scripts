@@ -1,5 +1,19 @@
 local blocks = {}
 
+blocks.do_not_dig = {
+  ["computercraft:turtle_advanced"] = true,
+  ["computercraft:turtle_normal"] = true,
+}
+
+blocks.cant_dig = {
+  ["minecraft:bedrock"] = true,
+}
+
+blocks.falling_blocks = {
+  ["minecraft:gravel"] = true,
+  ["minecraft:sand"] = true,
+}
+
 blocks.useless_blocks = {
   ["quark:limestone"] = true,
   ["quark:root_item"] = true,

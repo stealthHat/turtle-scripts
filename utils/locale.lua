@@ -3,12 +3,18 @@ local locale = {}
 local actions = require "utils.actions"
 
 State = {
-  coord = {},
-  facing = string,
-  init_coord = {},
-  init_facing = string,
-  prog_coord = {},
-  prog_facing = string,
+  coord = {
+    x = 0,
+    y = 0,
+    z = 0,
+    facing = string,
+  },
+  init_coord = {
+    x = 0,
+    y = 0,
+    z = 0,
+    facing = string,
+  },
 }
 
 local bumps = {
@@ -47,7 +53,7 @@ function locale.calibrate()
   elseif nz == sz + 1 then
     State.facing = "south"
   else
-    State.facing = "north"
+    State.coord.facing = "north"
   end
 
   State.coord = { x = sx, y = sy, z = sz }
@@ -97,34 +103,47 @@ function locale.move(direction)
 
   if direction == "forward" then
     bump = bumps[State.facing]
-    actions.move(direction)
-    State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
-    return
+    if actions.move(direction) then
+      State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
+      return true
+    end
+    return false
   end
 
   if direction == "up" then
-    actions.move(direction)
-    State.coord.y = State.coord.y + 1
-    return
+    if actions.move(direction) then
+      State.coord.y = State.coord.y + 1
+      return true
+    end
+    return false
   end
 
   if direction == "down" then
-    actions.move(direction)
-    State.coord.y = State.coord.y - 1
-    return
+    if actions.move(direction) then
+      State.coord.y = State.coord.y - 1
+      return true
+    end
+    return false
   end
 
   if direction == "back" then
     bump = bumps[State.facing]
-    actions.move(direction)
-    State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
-    return
+    if actions.move(direction) then
+      State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
+      return true
+    end
+    return false
   end
 end
 
-function locale.calculate_fuel_cost(coord_a, coord_b)
+function locale.has_enough_fuel(coord_a, coord_b)
   local cost = (math.abs(coord_b.x - coord_a.x) + math.abs(coord_a.y - coord_b.y) + math.abs(coord_a.z - coord_b.z)) * 2
-  return cost
+
+  if turtle.getFuelLevel() > cost then
+    return true
+  end
+
+  return false
 end
 
 return locale

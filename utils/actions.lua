@@ -28,11 +28,7 @@ local detect_direction = {
 }
 
 function actions.move(direction)
-  if move_direction[direction]() then
-    return true
-  end
-
-  error("cannot move" .. direction)
+  return move_direction[direction]()
 end
 
 function actions.dig(direction)
@@ -41,7 +37,26 @@ function actions.dig(direction)
   end
 
   local _, data = inspect_direction[direction]()
-  return dig_direction[direction](), data.tags
+
+  if block.cant_dig[data.name] then
+    return false
+  end
+
+  if block.do_not_dig[data.name] then
+    while detect_direction[direction] do
+      sleep(0.5)
+    end
+    return true
+  end
+
+  if block.falling_blocks[data.name] then
+    while detect_direction[direction] do
+      dig_direction[direction]()
+    end
+    return true
+  end
+
+  return dig_direction[direction]()
 end
 
 function actions.is_inventory_full()

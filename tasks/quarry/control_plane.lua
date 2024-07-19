@@ -40,19 +40,11 @@ local function run_jobs()
     if id and message == "get_job" then
       local job = table.remove(job_queue, 1)
       print("Assigning job at " .. job.x .. " " .. job.z)
-      rednet.send(id, "yes")
       rednet.send(id, job)
     end
   end
 
   print "No Jobs available"
-
-  while true do
-    local id, message, _ = rednet.receive()
-    if id and message == "get_job" then
-      rednet.send(id, "no")
-    end
-  end
 end
 
 rednet.close "back"

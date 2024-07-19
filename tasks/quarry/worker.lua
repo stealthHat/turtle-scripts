@@ -4,44 +4,15 @@ local locale = require "utils.locale"
 local actions = require "utils.actions"
 
 local work = true
-local lane = os.getComputerLabel():gsub("%D+", "")
 local control_plane_name = os.getComputerLabel():gsub("%d", "")
 
-local inspect_direction = {
-  forward = turtle.inspect,
-  up = turtle.inspectUp,
-  down = turtle.inspectDown,
-}
-
-local detect_direction = {
-  forward = turtle.detect,
-  up = turtle.detectUp,
-  down = turtle.detectDown,
-}
-
-local function go_to(coord)
-  local function dig_and_move(direction)
-    while detect_direction[direction]() do
-      local _, data = inspect_direction[direction]()
-      if not string.find(data.name, "turtle") then
-        actions.dig(direction)
-      end
-      sleep(0.5)
-    end
-
-    locale.move(direction)
-  end
-
-  local up = (State.init_coord.y - State.coord.y) + lane
-  for _ = 1, up do
-    dig_and_move "up"
-  end
-
+local function go_to(coord, face)
   local x_diff = coord.x - State.coord.x
   if x_diff ~= 0 then
     locale.face(x_diff > 0 and "east" or "west")
     for _ = 1, math.abs(x_diff) do
-      dig_and_move "forward"
+      actions.dig "forward"
+      locale.move "forward"
     end
   end
 
@@ -49,7 +20,8 @@ local function go_to(coord)
   if z_diff ~= 0 then
     locale.face(z_diff > 0 and "south" or "north")
     for _ = 1, math.abs(z_diff) do
-      dig_and_move "forward"
+      actions.dig "forward"
+      locale.move "forward"
     end
   end
 
@@ -57,122 +29,87 @@ local function go_to(coord)
   if y_diff ~= 0 then
     local direction = y_diff > 0 and "up" or "down"
     for _ = 1, math.abs(y_diff) do
-      dig_and_move(direction)
+      actions.dig(direction)
+      locale.move(direction)
     end
   end
+
+  locale.face(face)
 end
 
-local function go_home()
-  State.prog_coord = { x = State.coord.x, y = State.coord.y, z = State.coord.z }
-  State.prog_facing = State.facing
+local function unload_and_restock(restock)
+  local prog_coord = { State.coord, State.facing }
 
-  go_to(State.init_coord)
-  locale.face(State.init_facing)
-end
+  actions.drop_useless_blocks()
 
-local function go_work()
-  go_to(State.prog_coord)
-  locale.face(State.prog_facing)
-end
+  go_to(State.init_coord, State.init_facing)
 
-local function fuel_check()
-  if turtle.getFuelLevel() <= locale.calculate_fuel_cost(State.coord, State.init_coord) then
-    actions.refuel()
-    if turtle.getFuelLevel() <= locale.calculate_fuel_cost(State.coord, State.init_coord) then
-      go_home()
+  actions.drop_blocks()
 
-      locale.turn "left"
-      while turtle.getFuelLevel() < turtle.getFuelLimit() do
-        local success = turtle.suck(64)
+  if restock then
+    while turtle.getFuelLevel() < turtle.getFuelLimit() do
+      local success = turtle.suck(64)
 
-        if success then
-          actions.refuel()
-        end
-
-        break
+      if success then
+        actions.refuel()
       end
 
-      locale.turn "back"
-      actions.drop_blocks()
-
-      go_work()
+      break
     end
   end
+
+  while not locale.has_enough_fuel(State.init_coord, prog_coord) do
+    print "coal not enough"
+    actions.refuel()
+  end
+
+  go_to(prog_coord)
 end
 
-local function inventory_check()
+local function dig_and_move(direction)
+  if not actions.dig(direction) then
+    return false
+  end
+
   if actions.is_inventory_full() then
     actions.drop_useless_blocks()
 
     if actions.is_inventory_full() then
+      actions.refuel()
       actions.stack_and_organize_items()
-    end
 
-    if actions.is_inventory_full() then
-      go_home()
-
-      locale.turn "right"
-      actions.drop_blocks()
-
-      go_work()
-    end
-  end
-end
-
-local function dig_quarry(x, z, width)
-  local function dig_and_check(direction)
-    actions.dig(direction)
-    inventory_check()
-  end
-
-  local function move_down(n)
-    for _ = 1, n do
-      if not dig_and_check "down" then
-        return false
+      if actions.is_inventory_full() then
+        unload_and_restock(false)
       end
     end
-    locale.move "down"
-    return true
   end
 
-  local function dig_layer()
-    dig_and_check "up"
-    dig_and_check "down"
-
-    while detect_direction["forward"]() do
-      dig_and_check "forward"
-    end
-
-    locale.move "forward"
-    fuel_check()
+  if not locale.move(direction) then
+    return false
   end
 
-  local function move_to_start_position()
-    while not detect_direction["down"]() do
-      locale.move "down"
-    end
-    move_down(2)
+  if not locale.has_enough_fuel(State.coord, State.init_coord) then
+    unload_and_restock(true)
   end
 
-  print "going to quarry coord"
-  local y = State.init_coord.y + lane
-  go_to { x = x, y = y, z = z }
-  locale.face(State.init_facing)
+  return true
+end
 
+local function dig_quarry(width)
   print "going to possition"
-  move_to_start_position()
+  while actions.move "down" do
+  end
 
-  while move_down(3) do
-    print "start layer"
+  while dig_and_move "down" do
     for row = 1, width do
       for _ = 1, width - 1 do
-        dig_layer()
+        dig_and_move "forward"
       end
 
       if row < width then
         local turn_direction = (row % 2 == 1) and "left" or "right"
         locale.turn(turn_direction)
-        dig_layer()
+        dig_and_move "forward"
         locale.turn(turn_direction)
       end
     end
@@ -183,21 +120,24 @@ end
 
 local function get_job(control_plane)
   while work do
+    print "Getting a job"
+
     rednet.send(control_plane, "get_job")
+    local _, job, _ = rednet.receive()
 
-    local _, message, _ = rednet.receive()
-    if message == "yes" then
-      local _, job, _ = rednet.receive()
+    if job then
+      print "Job found, going to quarry coord"
 
-      if job then
-        dig_quarry(job.x, job.z, job.width)
-      end
-    elseif message == "no" then
-      work = false
-      go_home()
+      go_to({ x = job.x, y = State.init_coord.y, z = job.z }, State.init_facing)
+
+      dig_quarry(job.width)
+    else
+      print "No job found, returning home"
+      go_to(State.init_coord, State.init_facing)
       locale.turn "right"
       actions.drop_blocks()
       locale.face(State.init_facing)
+      work = false
     end
   end
 end
