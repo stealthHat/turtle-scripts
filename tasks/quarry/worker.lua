@@ -7,6 +7,11 @@ local work = true
 local control_plane_name = os.getComputerLabel():gsub("%d", "")
 
 local function go_to(coord, face)
+  for _ = 1, State.init_coord.y - State.coord.y do
+    actions.dig "up"
+    locale.move "up"
+  end
+
   local x_diff = coord.x - State.coord.x
   if x_diff ~= 0 then
     locale.face(x_diff > 0 and "east" or "west")
@@ -44,17 +49,15 @@ local function unload_and_restock(restock)
 
   go_to(State.init_coord, State.init_facing)
 
-  actions.drop_blocks()
+  actions.drop_blocks "down"
 
   if restock then
     while turtle.getFuelLevel() < turtle.getFuelLimit() do
-      local success = turtle.suck(64)
-
-      if success then
-        actions.refuel()
+      if not turtle.suckUp(64) then
+        break
       end
 
-      break
+      actions.refuel()
     end
   end
 
@@ -73,26 +76,22 @@ local function dig_and_move(direction)
 
   if actions.is_inventory_full() then
     actions.drop_useless_blocks()
-
-    if actions.is_inventory_full() then
-      actions.refuel()
-      actions.stack_and_organize_items()
-
-      if actions.is_inventory_full() then
-        unload_and_restock(false)
-      end
-    end
   end
 
-  if not locale.move(direction) then
-    return false
+  if actions.is_inventory_full() then
+    actions.stack_and_organize_items()
+    actions.refuel()
+  end
+
+  if actions.is_inventory_full() then
+    unload_and_restock(false)
   end
 
   if not locale.has_enough_fuel(State.coord, State.init_coord) then
     unload_and_restock(true)
   end
 
-  return true
+  return locale.move(direction)
 end
 
 local function dig_quarry(width)
@@ -126,19 +125,14 @@ local function get_job(control_plane)
     local _, job, _ = rednet.receive()
 
     if job then
-      print "Job found, going to quarry coord"
-
       go_to({ x = job.x, y = State.init_coord.y, z = job.z }, State.init_facing)
 
       dig_quarry(job.width)
-    else
-      print "No job found, returning home"
-      go_to(State.init_coord, State.init_facing)
-      locale.turn "right"
-      actions.drop_blocks()
-      locale.face(State.init_facing)
-      work = false
     end
+
+    go_to(State.init_coord, State.init_facing)
+    actions.drop_blocks "down"
+    work = false
   end
 end
 

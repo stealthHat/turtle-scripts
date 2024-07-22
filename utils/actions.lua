@@ -9,6 +9,11 @@ local move_direction = {
   back = turtle.back,
 }
 
+local turn_direction = {
+  right = turtle.turnRight,
+  left = turtle.turnLeft,
+}
+
 local dig_direction = {
   forward = turtle.dig,
   up = turtle.digUp,
@@ -27,8 +32,24 @@ local detect_direction = {
   down = turtle.detectDown,
 }
 
+local drop_direction = {
+  forward = turtle.drop,
+  up = turtle.dropUp,
+  down = turtle.dropDown,
+}
+
 function actions.move(direction)
   return move_direction[direction]()
+end
+
+function actions.turn(direction)
+  if direction == "back" then
+    turtle.turnRight()
+    turtle.turnRight()
+    return true
+  end
+
+  return turn_direction[direction]()
 end
 
 function actions.dig(direction)
@@ -82,13 +103,13 @@ function actions.refuel()
   turtle.select(1)
 end
 
-function actions.drop_blocks()
+function actions.drop_blocks(direction)
   for slot = 1, 16 do
     local item = turtle.getItemDetail(slot)
 
     if item then
       turtle.select(slot)
-      turtle.drop()
+      drop_direction[direction]()
     end
   end
 
@@ -109,25 +130,25 @@ function actions.drop_useless_blocks()
 end
 
 function actions.stack_and_organize_items()
-  for i = 1, 16 do
-    local current_slot = turtle.getItemDetail(i)
+  for slot = 1, 16 do
+    local current_slot = turtle.getItemDetail(slot)
     if current_slot then
-      for j = i + 1, 16 do
-        local compare_slot = turtle.getItemDetail(j)
+      for i = slot + 1, 16 do
+        local compare_slot = turtle.getItemDetail(i)
         if compare_slot and current_slot.name == compare_slot.name then
-          turtle.select(j)
-          turtle.transferTo(i)
+          turtle.select(i)
+          turtle.transferTo(slot)
         end
       end
     end
   end
 
-  for i = 1, 16 do
-    if not turtle.getItemDetail(i) then
-      for j = i + 1, 16 do
-        if turtle.getItemDetail(j) then
-          turtle.select(j)
-          turtle.transferTo(i)
+  for slot = 1, 16 do
+    if not turtle.getItemDetail(slot) then
+      for i = slot + 1, 16 do
+        if turtle.getItemDetail(i) then
+          turtle.select(i)
+          turtle.transferTo(slot)
           break
         end
       end

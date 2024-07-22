@@ -18,49 +18,38 @@ State = {
 }
 
 local bumps = {
-  north = { 0, 0, -1 },
-  south = { 0, 0, 1 },
-  east = { 1, 0, 0 },
-  west = { -1, 0, 0 },
+  north = { 0, -1 },
+  south = { 0, 1 },
+  west = { -1, 0 },
+  east = { 1, 0 },
 }
 
-local left_shift = {
-  north = "west",
-  south = "east",
-  east = "north",
-  west = "south",
-}
-
-local right_shift = {
-  north = "east",
-  south = "west",
-  east = "south",
-  west = "north",
+local shift = {
+  left = {
+    north = "west",
+    south = "east",
+    east = "north",
+    west = "south",
+  },
+  right = {
+    north = "east",
+    south = "west",
+    east = "south",
+    west = "north",
+  },
 }
 
 function locale.calibrate()
-  print "Stating calibration"
-
   local sx, sy, sz = gps.locate(10, false)
   turtle.forward()
   local nx, _, nz = gps.locate(10, false)
   turtle.back()
 
-  if nx == sx + 1 then
-    State.facing = "east"
-  elseif nx == sx - 1 then
-    State.facing = "west"
-  elseif nz == sz + 1 then
-    State.facing = "south"
-  else
-    State.coord.facing = "north"
-  end
-
+  State.facing = nx == sx + 1 and "east" or nx == sx - 1 and "west" or nz == sz + 1 and "south" or "north"
   State.coord = { x = sx, y = sy, z = sz }
-  State.init_coord = { x = sx, y = sy, z = sz }
-  State.init_facing = State.facing
 
-  print("Calibrated to " .. State.coord.x .. "," .. State.coord.y .. "," .. State.coord.z .. " facing " .. State.facing)
+  State.init_facing = State.facing
+  State.init_coord = { x = sx, y = sy, z = sz }
 end
 
 function locale.face(cardinal_direction)
@@ -68,17 +57,17 @@ function locale.face(cardinal_direction)
     return
   end
 
-  if cardinal_direction == right_shift[State.facing] then
+  if cardinal_direction == shift.right[State.facing] then
     State.facing = cardinal_direction
     return turtle.turnRight()
   end
 
-  if cardinal_direction == left_shift[State.facing] then
+  if cardinal_direction == shift.left[State.facing] then
     State.facing = cardinal_direction
     return turtle.turnLeft()
   end
 
-  if cardinal_direction == right_shift[right_shift[State.facing]] then
+  if cardinal_direction == shift.right[shift.right[State.facing]] then
     State.facing = cardinal_direction
     return turtle.turnRight() and turtle.turnRight()
   end
@@ -87,53 +76,34 @@ end
 function locale.turn(side)
   if side == "left" then
     turtle.turnLeft()
-    State.facing = left_shift[State.facing]
+    State.facing = shift.left[State.facing]
   elseif side == "right" then
     turtle.turnRight()
-    State.facing = right_shift[State.facing]
+    State.facing = shift.right[State.facing]
   else
     turtle.turnRight()
     turtle.turnRight()
-    State.facing = right_shift[right_shift[State.facing]]
+    State.facing = shift.right[shift.right[State.facing]]
   end
 end
 
 function locale.move(direction)
-  local bump
+  local bump = bumps[State.facing]
+  local success = actions.move(direction)
 
-  if direction == "forward" then
-    bump = bumps[State.facing]
-    if actions.move(direction) then
-      State.coord = { x = State.coord.x + bump[1], y = State.coord.y + bump[2], z = State.coord.z + bump[3] }
-      return true
-    end
-    return false
-  end
-
-  if direction == "up" then
-    if actions.move(direction) then
+  if success then
+    if direction == "forward" then
+      State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[3] }
+    elseif direction == "back" then
+      State.coord = { x = State.coord.x - bump[1], z = State.coord.z - bump[3] }
+    elseif direction == "up" then
       State.coord.y = State.coord.y + 1
-      return true
-    end
-    return false
-  end
-
-  if direction == "down" then
-    if actions.move(direction) then
+    elseif direction == "down" then
       State.coord.y = State.coord.y - 1
-      return true
     end
-    return false
   end
 
-  if direction == "back" then
-    bump = bumps[State.facing]
-    if actions.move(direction) then
-      State.coord = { x = State.coord.x - bump[1], y = State.coord.y - bump[2], z = State.coord.z - bump[3] }
-      return true
-    end
-    return false
-  end
+  return success
 end
 
 function locale.has_enough_fuel(coord_a, coord_b)
