@@ -127,7 +127,7 @@ local function get_job(control_plane)
     local _, job, _ = rednet.receive()
 
     if job then
-      go_to { x = job.x, y = State.init_coord.y, z = job.z, facing = State.init_facing }
+      go_to { x = job.x, y = State.init_coord.y, z = job.z, facing = "east" }
 
       while actions.move "down" do
       end
