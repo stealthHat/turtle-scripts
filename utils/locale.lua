@@ -45,11 +45,10 @@ function locale.calibrate()
   local nx, _, nz = gps.locate(10, false)
   turtle.back()
 
-  State.facing = nx == sx + 1 and "east" or nx == sx - 1 and "west" or nz == sz + 1 and "south" or "north"
-  State.coord = { x = sx, y = sy, z = sz }
+  local facing = nx == sx + 1 and "east" or nx == sx - 1 and "west" or nz == sz + 1 and "south" or "north"
 
-  State.init_facing = State.facing
-  State.init_coord = { x = sx, y = sy, z = sz }
+  State.coord = { x = sx, y = sy, z = sz, facing = facing }
+  State.init_coord = { x = sx, y = sy, z = sz, facing = facing }
 end
 
 function locale.face(cardinal_direction)
@@ -107,7 +106,7 @@ function locale.move(direction)
 end
 
 function locale.has_enough_fuel(coord_a, coord_b)
-  local cost = (math.abs(coord_b.x - coord_a.x) + math.abs(coord_a.y - coord_b.y) + math.abs(coord_a.z - coord_b.z)) * 2
+  local cost = math.abs(coord_b.x - coord_a.x) + math.abs(coord_a.y - coord_b.y) + math.abs(coord_a.z - coord_b.z)
 
   if turtle.getFuelLevel() > cost then
     return true

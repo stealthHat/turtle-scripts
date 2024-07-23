@@ -1,6 +1,6 @@
 local blocks = {}
 
-blocks.do_not_dig = {
+blocks.turtle = {
   ["computercraft:turtle_advanced"] = true,
   ["computercraft:turtle_normal"] = true,
 }

@@ -39,6 +39,19 @@ local drop_direction = {
 }
 
 function actions.move(direction)
+  if not detect_direction[direction]() then
+    return move_direction[direction]()
+  end
+
+  local _, data = inspect_direction[direction]()
+
+  if block.turtle[data.name] then
+    while detect_direction[direction] do
+      sleep(0.5)
+    end
+    return true
+  end
+
   return move_direction[direction]()
 end
 
@@ -53,21 +66,10 @@ function actions.turn(direction)
 end
 
 function actions.dig(direction)
-  if not detect_direction[direction]() then
-    return true
-  end
-
   local _, data = inspect_direction[direction]()
 
   if block.cant_dig[data.name] then
     return false
-  end
-
-  if block.do_not_dig[data.name] then
-    while detect_direction[direction] do
-      sleep(0.5)
-    end
-    return true
   end
 
   if block.falling_blocks[data.name] then
@@ -77,7 +79,8 @@ function actions.dig(direction)
     return true
   end
 
-  return dig_direction[direction]()
+  dig_direction[direction]()
+  return true
 end
 
 function actions.is_inventory_full()
