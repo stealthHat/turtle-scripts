@@ -87,14 +87,14 @@ function locale.turn(side)
 end
 
 function locale.move(direction)
-  local bump = bumps[State.facing]
+  local bump = bumps[State.coord.facing]
   local success = actions.move(direction)
 
   if success then
     if direction == "forward" then
-      State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[3] }
+      State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
     elseif direction == "back" then
-      State.coord = { x = State.coord.x - bump[1], z = State.coord.z - bump[3] }
+      State.coord = { x = State.coord.x - bump[1], z = State.coord.z - bump[2] }
     elseif direction == "up" then
       State.coord.y = State.coord.y + 1
     elseif direction == "down" then
