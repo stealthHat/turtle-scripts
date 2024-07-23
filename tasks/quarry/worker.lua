@@ -96,13 +96,11 @@ local function dig_and_move_check(direction)
       go_to(prog_coord)
     end
   end
+
+  return true
 end
 
 local function dig_quarry(width)
-  print "going to possition"
-  while actions.move "down" do
-  end
-
   while dig_and_move_check "down" do
     for row = 1, width do
       for _ = 1, width - 1 do
@@ -130,6 +128,9 @@ local function get_job(control_plane)
 
     if job then
       go_to { x = job.x, y = State.init_coord.y, z = job.z, facing = State.init_facing }
+
+      while actions.move "down" do
+      end
 
       dig_quarry(job.width)
     end
