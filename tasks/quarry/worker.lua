@@ -56,6 +56,8 @@ local function restock()
 
     actions.refuel()
   end
+
+  actions.drop_blocks "down"
 end
 
 local function dig_and_move_check(direction)

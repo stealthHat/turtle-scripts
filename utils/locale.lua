@@ -52,22 +52,22 @@ function locale.calibrate()
 end
 
 function locale.face(cardinal_direction)
-  if cardinal_direction == State.facing then
+  if cardinal_direction == State.coord.facing then
     return
   end
 
-  if cardinal_direction == shift.right[State.facing] then
-    State.facing = cardinal_direction
+  if cardinal_direction == shift.right[State.coord.facing] then
+    State.coord.facing = cardinal_direction
     return turtle.turnRight()
   end
 
-  if cardinal_direction == shift.left[State.facing] then
-    State.facing = cardinal_direction
+  if cardinal_direction == shift.left[State.coord.facing] then
+    State.coord.facing = cardinal_direction
     return turtle.turnLeft()
   end
 
-  if cardinal_direction == shift.right[shift.right[State.facing]] then
-    State.facing = cardinal_direction
+  if cardinal_direction == shift.right[shift.right[State.coord.facing]] then
+    State.coord.facing = cardinal_direction
     return turtle.turnRight() and turtle.turnRight()
   end
 end
@@ -75,14 +75,14 @@ end
 function locale.turn(side)
   if side == "left" then
     turtle.turnLeft()
-    State.facing = shift.left[State.facing]
+    State.coord.facing = shift.left[State.coord.facing]
   elseif side == "right" then
     turtle.turnRight()
-    State.facing = shift.right[State.facing]
+    State.coord.facing = shift.right[State.coord.facing]
   else
     turtle.turnRight()
     turtle.turnRight()
-    State.facing = shift.right[shift.right[State.facing]]
+    State.coord.facing = shift.right[shift.right[State.coord.facing]]
   end
 end
 
