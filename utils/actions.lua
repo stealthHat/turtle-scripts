@@ -74,7 +74,7 @@ function actions.dig(direction)
   end
 
   if block.falling_blocks[data.name] then
-    while detect_direction[direction] do
+    while detect_direction[direction]() do
       dig_direction[direction]()
     end
     return true

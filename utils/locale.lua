@@ -49,8 +49,6 @@ function locale.calibrate()
 
   State.coord = { x = sx, y = sy, z = sz, facing = facing }
   State.init_coord = { x = sx, y = sy, z = sz, facing = facing }
-  print(State.coord.facing)
-  print(bumps[State.coord.facing])
 end
 
 function locale.face(cardinal_direction)
