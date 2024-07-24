@@ -49,7 +49,8 @@ function actions.move(direction)
     while detect_direction[direction] do
       sleep(0.5)
     end
-    return true
+
+    return move_direction[direction]()
   end
 
   return move_direction[direction]()
