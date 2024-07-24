@@ -50,6 +50,7 @@ function locale.calibrate()
   State.coord = { x = sx, y = sy, z = sz, facing = facing }
   State.init_coord = { x = sx, y = sy, z = sz, facing = facing }
   print(State.coord.facing)
+  print(bumps[State.coord.facing])
 end
 
 function locale.face(cardinal_direction)
@@ -91,11 +92,11 @@ function locale.move(direction)
   local success = actions.move(direction)
 
   if success then
-    local bump = bumps[State.coord.facing]
-
     if direction == "forward" then
+      local bump = bumps[State.coord.facing]
       State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
     elseif direction == "back" then
+      local bump = bumps[State.coord.facing]
       State.coord = { x = State.coord.x - bump[1], z = State.coord.z - bump[2] }
     elseif direction == "up" then
       State.coord.y = State.coord.y + 1
