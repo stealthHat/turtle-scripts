@@ -92,11 +92,20 @@ function locale.move(direction)
   local success = actions.move(direction)
 
   if success then
+    local bump = bumps[State.coord.facing]
+
     if direction == "forward" then
       print(State.coord.facing)
-      local bump = bumps[State.coord.facing]
       print(bump[1])
       print(bump[2])
+
+      local a = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
+      print(a.x .. "-" .. a.z)
+      while true do
+        print "done"
+        sleep(10)
+      end
+
       State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
     elseif direction == "back" then
       local bump = bumps[State.coord.facing]
