@@ -39,7 +39,7 @@ local drop_direction = {
 }
 
 function actions.move(direction)
-  if not detect_direction[direction]() then
+  if not detect_direction[direction] then
     return move_direction[direction]()
   end
 
