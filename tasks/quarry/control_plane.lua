@@ -15,9 +15,9 @@ local width = read_number()
 
 local function make_jobs()
   local x_min = math.min(x_start, x_end)
-  local x_max = math.max(x_start, x_end) - width
+  local x_max = math.max(x_start, x_end)
   local z_min = math.min(z_start, z_end)
-  local z_max = math.max(z_start, z_end) - width
+  local z_max = math.max(z_start, z_end)
 
   for x = x_min, x_max, width do
     for z = z_min, z_max, width do
