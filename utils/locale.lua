@@ -101,6 +101,7 @@ function locale.move(direction)
 
       local a = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
       print(a.x .. "-" .. a.z)
+      State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
       while true do
         print "done"
         sleep(10)
