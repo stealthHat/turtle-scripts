@@ -46,7 +46,7 @@ function actions.move(direction)
   local _, data = inspect_direction[direction]()
 
   if block.turtle[data.name] then
-    while detect_direction[direction] do
+    while detect_direction[direction]() do
       sleep(0.5)
     end
 
