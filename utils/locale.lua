@@ -41,9 +41,9 @@ local shift = {
 
 function locale.calibrate()
   local sx, sy, sz = gps.locate(10, false)
-  turtle.forward()
+  actions.move "forward"
   local nx, _, nz = gps.locate(10, false)
-  turtle.back()
+  actions.move "back"
 
   local facing = nx == sx + 1 and "east" or nx == sx - 1 and "west" or nz == sz + 1 and "south" or "north"
 
