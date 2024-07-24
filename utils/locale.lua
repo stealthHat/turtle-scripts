@@ -94,6 +94,8 @@ function locale.move(direction)
   if success then
     if direction == "forward" then
       local bump = bumps[State.coord.facing]
+      print(bump[1])
+      print(bump[2])
       State.coord = { x = State.coord.x + bump[1], z = State.coord.z + bump[2] }
     elseif direction == "back" then
       local bump = bumps[State.coord.facing]
