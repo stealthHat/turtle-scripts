@@ -6,7 +6,6 @@ local move_direction = {
   forward = turtle.forward,
   up = turtle.up,
   down = turtle.down,
-  back = turtle.back,
 }
 
 local turn_direction = {
@@ -39,7 +38,7 @@ local drop_direction = {
 }
 
 function actions.move(direction)
-  if not detect_direction[direction] then
+  if not detect_direction[direction]() then
     return move_direction[direction]()
   end
 

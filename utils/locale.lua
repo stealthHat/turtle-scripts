@@ -42,13 +42,12 @@ local shift = {
 function locale.calibrate()
   local sx, sy, sz = gps.locate(10, false)
   actions.move "forward"
-  local nx, _, nz = gps.locate(10, false)
-  actions.move "back"
+  local nx, ny, nz = gps.locate(10, false)
 
   local facing = nx == sx + 1 and "east" or nx == sx - 1 and "west" or nz == sz + 1 and "south" or "north"
 
-  State.coord = { x = sx, y = sy, z = sz, facing = facing }
   State.init_coord = { x = sx, y = sy, z = sz, facing = facing }
+  State.coord = { x = nx, y = ny, z = nz, facing = facing }
 end
 
 function locale.face(cardinal_direction)
@@ -95,9 +94,6 @@ function locale.move(direction)
     if direction == "forward" then
       State.coord.x = State.coord.x + bump[1]
       State.coord.z = State.coord.z + bump[2]
-    elseif direction == "back" then
-      State.coord.x = State.coord.x - bump[1]
-      State.coord.z = State.coord.z - bump[2]
     elseif direction == "up" then
       State.coord.y = State.coord.y + 1
     elseif direction == "down" then
