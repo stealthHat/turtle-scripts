@@ -110,7 +110,7 @@ local function dig_quarry(width)
       end
 
       if row < width then
-        local turn_direction = (row % 2 == 1) and "left" or "right"
+        local turn_direction = (row % 2 == 1) and "right" or "left"
         locale.turn(turn_direction)
         dig_and_move_check "forward"
         locale.turn(turn_direction)

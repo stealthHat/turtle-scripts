@@ -21,12 +21,9 @@ local function make_jobs()
 
   for x = x_min, x_max, width do
     for z = z_min, z_max, width do
-      local job = {
-        x = x,
-        z = z,
-        width = width,
-      }
-      table.insert(job_queue, job)
+      if x + width <= x_max and z + width <= z_max then
+        table.insert(job_queue, { x = x, z = z, width = width })
+      end
     end
   end
 end
