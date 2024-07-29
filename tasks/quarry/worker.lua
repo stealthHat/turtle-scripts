@@ -15,7 +15,7 @@ local function dig_and_move(direction)
 end
 
 local function go_to(coord)
-  for _ = 1, State.coord.y - State.init_coord.y do
+  for _ = 1, State.init_coord.y - State.coord.y do
     if not locale.move "up" then
       dig_and_move "up"
     end
