@@ -133,39 +133,39 @@ function actions.drop_useless_blocks()
 end
 
 function actions.stack_and_organize_items()
-  local emptySlot = nil
+  local empty_slot = nil
 
   for slot = 1, 16 do
-    local currentSlot = turtle.getItemDetail(slot)
+    local current_slot = turtle.getItemDetail(slot)
 
-    if currentSlot then
+    if current_slot then
       for i = slot + 1, 16 do
-        local compareSlot = turtle.getItemDetail(i)
-        if compareSlot and currentSlot.name == compareSlot.name then
-          local spaceLeft = currentSlot.maxCount - currentSlot.count
-          if spaceLeft > 0 then
+        local compare_slot = turtle.getItemDetail(i)
+        if compare_slot and current_slot.name == compare_slot.name then
+          local space_left = current_slot.maxCount - current_slot.count
+          if space_left > 0 then
             turtle.select(i)
-            local transferAmount = math.min(spaceLeft, compareSlot.count)
-            turtle.transferTo(slot, transferAmount)
+            local transfer_amount = math.min(space_left, compare_slot.count)
+            turtle.transferTo(slot, transfer_amount)
             -- Update the current slot's item count
-            currentSlot = turtle.getItemDetail(slot)
+            current_slot = turtle.getItemDetail(slot)
           end
         end
       end
-    elseif not emptySlot then
-      emptySlot = slot
+    elseif not empty_slot then
+      empty_slot = slot
     end
   end
 
-  if emptySlot then
-    for slot = emptySlot, 16 do
+  if empty_slot then
+    for slot = empty_slot, 16 do
       if not turtle.getItemDetail(slot) then
         for i = slot + 1, 16 do
-          local itemDetail = turtle.getItemDetail(i)
-          if itemDetail then
+          local item_detail = turtle.getItemDetail(i)
+          if item_detail then
             turtle.select(i)
             turtle.transferTo(slot)
-            emptySlot = slot + 1
+            empty_slot = slot + 1
             break
           end
         end
